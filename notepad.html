@@ -2,6 +2,9 @@
    <title>Notepad</title>
    <body>
       <h3>Notepad <button onclick="saveFile()">Save</button></h3>
+      Font Size: <input type="range" id="vol" name="vol" min="20" max="50" onchange="document.getElementById('notepad').style['font-size']=this.value;
+         document.getElementById('fs').innerHTML=this.value;
+         "> <div id="fs"></div>
       <hr/>
       <div id="notepad" contenteditable style="width:100%;height:100%;padding:20px">write here...</div>
       <script>function saveFile(){var e=new Blob([document.getElementById("notepad").innerText],{type:"text/plain;charset=utf-8"}),t=URL.createObjectURL(e),n=document.getElementById("dlink");n.href=t,n.click();}</script>
