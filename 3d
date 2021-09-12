@@ -1,0 +1,62 @@
+<html>
+<style>
+div, p {
+position: absolute;
+}
+
+</style>
+
+<head>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/fontawesome.min.css" integrity="sha384-jLKHWM3JRmfMU0A5x5AkjWkw/EYfGUAGagvnfryNV3F9VqM98XiIH7VBGVoxVSc7" crossorigin="anonymous">
+</head>
+<body>
+<div id="a" style="color:red">*</i></div>
+<div id="b" style="color:red">*</div>
+</body>
+
+<script>
+	const rect = document.body.getBoundingClientRect();
+	const A = document.getElementById("a");
+	const B = document.getElementById("b");
+	const D = document.getElementById("div");
+	const centerX = rect.x + rect.width/2;
+	const centerY = rect.y + rect.height/2 - 100;
+
+const getInt = (val) => {
+	return parseInt(`${val}`.replace(/[^0-9.]/g, ""));
+}
+
+const moveTo = (E, x, y) => {
+	E.style.top = Math.floor(centerY - y);
+	E.style.left = Math.floor(centerX + x);
+}
+
+const radius = 100;
+let y = -1 * radius;
+let x = -1 * radius
+let yD = 1;
+let xD = 1;
+
+setInterval(() => {
+if(y >= radius || y <= -1 * radius)
+	yD = y > 0 ? -0.2 : 0.2;
+
+const diff = (Math.abs(y) < (radius - 10) ? (radius / Math.abs(y)) : 0)/5;
+console.log();
+y+=yD;
+
+x = (Math.pow((radius*radius - (y*y)),1/2)) * yD / 0.3
+moveTo(A, x, y);
+moveTo(B, -x, -y);
+
+const fontsizeA = 19 + radius - y;
+A.style["font-size"] = `${fontsizeA}px`;
+A.style.opacity=(radius- y)/(2*radius) + 0.1;
+
+const fontsizeB = 19 + radius + y;
+B.style["font-size"] = `${fontsizeB}px`;
+B.style.opacity=(radius+y)/(2*radius) + 0.1;
+}, 1)
+//setInterval(() => updateFont(A, B), 500);
+</script>
+</html>
