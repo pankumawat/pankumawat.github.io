@@ -1,0 +1,105 @@
+<html>
+<style>
+#canvas {
+	position: absolute;
+	width: 800;
+	height: 600;
+	left: 0px;
+	top: 20px;
+	background-color: black;
+}
+</style>
+
+<div id="park"></div>
+<canvas id="canvas"></canvas>
+
+<script>
+let mousedown = false;
+const parkBounds = park.getBoundingClientRect();
+const baseX = parkBounds.x;
+const baseY = parkBounds.y;
+
+
+const canvas = document.getElementById("canvas")
+let lastX, lastY;
+
+canvas.width = 800;
+canvas.height = 600;
+const ctx = canvas.getContext('2d')
+			ctx.fillStyle= "red";
+  		ctx.font = "italic bold 12pt Tahoma";
+
+const translateX = (x) => (x > 400 ? 800 : (x <= 0 ? 400 : ( x + 400 )));
+const translateY = (y) => (y > 400 ? 200 : (y <= 0 ? 500 : ( 600 - y - 100)));
+const clear = () => ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+const xFixed = 400;
+const yFixed = 500;
+const legLen = 400;
+
+const linelen = (x, y) => Math.pow((Math.pow((y - yFixed), 2) + Math.pow((x - xFixed), 2)),1/2);
+const dToR = (d) => d  * Math.PI / 180;
+const rToD = (r) => r * 180 / Math.PI;
+
+const dot = (x, y) => {
+		lastX = lastX ?? x;
+		lastY = lastY ?? y;
+  	ctx.beginPath();
+  	ctx.strokeStyle = 'red';
+  	ctx.lineWidth = 3;
+  	ctx.arc(x, y, 3, 0, 2 * Math.PI, true);
+  	ctx.stroke();
+}
+
+function drawLine(x1, y1, x2, y2, color) {
+	//lastX = x2;
+	//lastY = y2;
+	
+	//console.log({x1,y1,x2,y2});
+	ctx.strokeStyle = 'white';
+	ctx.lineWidth = 3;
+	ctx.beginPath();
+
+	ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+}
+
+canvas.addEventListener('mousedown', (e) => mousedown = true);
+canvas.addEventListener('mouseup', (e) => mousedown = false);
+
+canvas.addEventListener('mousemove', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  let x = e.clientX - rect.left;
+  let y = e.clientY - rect.top;
+  console.log({x, y});
+
+	x = x < xFixed ? xFixed : x;
+	y = y > yFixed ? yFixed : y;
+	clear();
+  	//drawLine(xFixed, yFixed, x, y)
+  	dot(xFixed, yFixed);
+  	dot(x, y);
+
+  	const ll = linelen(x, y);
+  	const angle = rToD(Math.asin((lastY - y)/ll));
+  	const angleBetweenLegAndBase = rToD(Math.acos((ll / 2) / legLen));
+  	const effectiveAngle = angleBetweenLegAndBase + angle;
+  	const legX = (Math.cos(dToR(effectiveAngle)) * legLen) + xFixed;
+  	const legY = -1 * (Math.sin(dToR(effectiveAngle)) * legLen) + yFixed;
+
+  	dot(legX, legY);
+  	drawLine(xFixed, yFixed, legX, legY);
+  	drawLine(legX, legY, x, y);
+
+		ctx.fillText(Math.round(angleBetweenLegAndBase,1), xFixed, yFixed)
+		ctx.fillText(Math.round(2*(90-angleBetweenLegAndBase),1), legX, legY)
+		ctx.fillText(Math.round(angleBetweenLegAndBase,1), x, y)
+
+  	console.log({ll, angle, angleBetweenLegAndBase})
+});
+
+
+dot(xFixed,yFixed);
+</script>
+</html>
