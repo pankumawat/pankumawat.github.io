@@ -189,12 +189,14 @@ input {
 }
 
 #WHATSAPP {
-	position: fixed;
-	left: 10px;
-	top: 10px;
+	position: absolute;
 	display: none;
+	height: 50px;
 }
 
+#WHATSAPP_IMG {
+	height: 50px;
+}
 #root {
 	margin-top: 30px;
 	}
@@ -203,7 +205,7 @@ input {
 
 </head>
 <body>
-	<img id="WHATSAPP"/>
+	<a href="#" id="WHATSAPP" target="_blank"><img id="WHATSAPP_IMG"/></a>
 	<div id="root">
 		<h2>Solar Estimator</h2>
 		<table>
@@ -350,16 +352,20 @@ const json = {
 	"QUANTITY_ELEMENTS" : {}
 }
 
+const TOTAL = document.getElementById("total");
 
 const WHATSAPP = document.getElementById("WHATSAPP");
-WHATSAPP.src = ICONS["WHATSAPP"];
+const WHATSAPP_IMG = document.getElementById("WHATSAPP_IMG");
+WHATSAPP_IMG.src = ICONS["WHATSAPP"];
 	
 const showWhatsapp = () => {
-	WHATSAPP.style.display: "block";
+	WHATSAPP.style.display = "block";
+	WHATSAPP.style.left = TOTAL.getBoundingClientRect().left;
+	WHATSAPP.style.top =  "0px";
 }
 
 const hideWhatsapp = () => {
-	WHATSAPP.style.display: "none";
+	WHATSAPP.style.display = "none";
 }
 
 const selectedItem = (label, itemName) => {
@@ -407,6 +413,8 @@ const computeAndRender = () => {
 	else hideWhatsapp();
 	
 	document.getElementById("total").innerHTML = `Rs. ${min} to ${max}`;
+
+	WHATSAPP.href = `https://wa.me/917014772530?text=Solar Enquiry:%0a${Object.keys(json.SELECTION).map(label => (`%0a${label} = ${json.SELECTION[label]}${label == "PANEL"  ? ` (${json.PANEL_WATT} WATT)` : ''}%0aquantity =  ${json.UNITS[label]}`)).join("%0a")}`;
 }
 
 const WATT = document.getElementById("WATT");
