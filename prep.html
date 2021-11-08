@@ -1,6 +1,26 @@
 <html>
 <body>
-
+  <pre>
+  oftware Side
+ - Design Principles - S.O.L.I.D
+ - Design Patterns
+     - Factory
+     - Proxy
+     - Decorator
+     - Adaptor
+ - OOPs Concepts
+ DB
+ - SQL DB
+     - Table Partitioning
+     - DB Partitioning
+     - Indexing
+     - Write/Read Locking Mechanisms
+     - Transactions / Rollback
+     - BackUps
+     </pre>
+  
+<hr/>
+  <div id='root'></div>
 </body>
 
 <script>
@@ -9,7 +29,7 @@ let links = [
   "https://restfulapi.net"
 ]
 
-document.body.innerHTML = links.map(i => `<a href="${i}">${i}</a>`).join('<br/>');
+root.innerHTML = links.map(i => `<a href="${i}">${i}</a>`).join('<br/>');
                
 links.forEach((i) => fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(i)}`)
                     .then(response => {
