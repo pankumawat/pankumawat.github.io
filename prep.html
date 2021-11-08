@@ -20,6 +20,6 @@ links.forEach((i) => fetch(`https://api.allorigins.win/get?url=${encodeURICompon
                         html = html.trim();
                         template.innerHTML = html;
                         document.querySelector(`a[href='${i}']`).innerHTML =template.content.firstChild.getElementsByTagName("title")[0].innerText;
-                    }));
+                    })));
 </script>
 </html>
