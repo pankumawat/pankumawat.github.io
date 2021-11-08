@@ -10,16 +10,12 @@ let links = [
 
 document.body.innerHTML = links.map(i => `<a href="${i}">${i}</a>`).join('<br/>');
                
-links.forEach((i) => fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(i)}`
+links.forEach((i) => fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(i)}`)
                     .then(response => {
                       if (response.ok) return response.text();
                       throw new Error('Network response was not ok.')
                     })
-                    .then(html => {
-                        let template = document.createElement('template');
-                        html = html.trim();
-                        template.innerHTML = html;
-                        document.querySelector(`a[href='${i}']`).innerHTML =template.content.firstChild.getElementsByTagName("title")[0].innerText;
-                    })));
+                    .then(html => document.querySelector(`a[href='${i}']`).innerHTML = new DOMParser().parseFromString(html, 'text/html').title)
+             );
 </script>
 </html>
