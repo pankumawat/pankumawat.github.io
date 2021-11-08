@@ -1,0 +1,13 @@
+<html>
+<body>
+
+</body>
+
+<script>
+let links = [
+"https://medium.com/future-vision/the-principles-of-rest-6b00deac91b3"
+]
+
+document.body.innerHTML = linkns.map(i => `<a href="${i}">${i}</a>`).join('<br/>');
+</script>
+</html>
