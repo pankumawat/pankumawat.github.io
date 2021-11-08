@@ -10,7 +10,7 @@ let links = [
 
 document.body.innerHTML = links.map(i => `<a href="${i}">${i}</a>`).join('<br/>');
                
-links.forEach(fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(i)
+links.forEach((i) => fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(i)
                     .then(response => {
                       if (response.ok) return response.text();
                       throw new Error('Network response was not ok.')
