@@ -1,48 +1,140 @@
 <html>
-<body>
-  <pre>
-  Software Side
- - Design Principles - S.O.L.I.D
- - Design Patterns
-     - Factory
-     - Proxy
-     - Decorator
-     - Adaptor
- - OOPs Concepts
- DB
- - SQL DB
-     - Table Partitioning
-     - DB Partitioning
-     - Indexing
-     - Write/Read Locking Mechanisms
-     - Transactions / Rollback
-     - BackUps
-     </pre>
-  
-<hr/>
-  <div id='root'></div>
-</body>
+   <head>
+      <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+   </head>
+   <body>
+      <div id="root">
+         <c-prep v-bind:data="data"/>
+      </div>
+   </body>
+   <script>
+			Vue.component('clink', {
+			    props: ['link'],
+			    template: '<a v-bind:href="link.url">{{ link.title }}</a>'
+			})
 
-<script>
-let links = [
-"https://medium.com/future-vision/the-principles-of-rest-6b00deac91b3",
-  "https://restfulapi.net",
-  "https://www.geeksforgeeks.org/solid-principle-in-programming-understand-with-real-life-examples/",
-  
-  "https://www.javatpoint.com/proxy-pattern",
-  "https://www.javatpoint.com/decorator-pattern",
-  "https://www.javatpoint.com/adapter-pattern",
-  "https://www.javatpoint.com/factory-method-design-pattern"
-]
+			Vue.component('ctopic', {
+			    props: ['topic', 'links'],
+			    template: `
+			        		<li>
+			      			<h3>{{ topic }}</h3>
+			      			<ul>
+			      			    <li v-for="link in links">
+			      			      <clink v-bind:link="link"/>
+			      			    }
+			      			    }
+			      				</li>
+			      		  </ul>
+			      		</li>
+			      `
+			})
 
-root.innerHTML = links.map(i => `<a href="${i}">${i}</a>`).join('<br/>');
-               
-links.forEach((i) => fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(i)}`)
-                    .then(response => {
-                      if (response.ok) return response.text();
-                      throw new Error('Network response was not ok.')
-                    })
-                    .then(html => document.querySelector(`a[href='${i}']`).innerHTML = new DOMParser().parseFromString(html, 'text/html').title)
-             );
-</script>
+			Vue.component('c-section', {
+			    props: ['datas', 'title'],
+			    template: `
+			      		  <div>
+			      			  <h2>{{ title }}</h2>
+			      			  <ul>
+			      					<li v-for="data in datas">
+			      						<ctopic v-bind:topic="data.topic" v-bind:links="data.links"/>
+			      					</li>
+			      			  </ul>
+			      		</div>
+			      		`
+			})
+
+			Vue.component('c-prep', {
+			    props: ['data'],
+			    template: `
+			      		  <ul>
+			      		  			<li v-for="dt in data">
+			      						<c-section v-bind:title="dt.title" v-bind:datas="dt.data"/>
+			      					</li>
+			      		  </ul>
+			      		`
+			})
+
+
+
+
+			var app = new Vue({
+			    el: '#root',
+			    data: {
+
+			        data: [{
+			                title: "Software Side",
+			                data: [{
+			                        topic: "Design Principles - S.O.L.I.D",
+			                        links: [{
+			                            url: "https://www.geeksforgeeks.org/solid-principle-in-programming-understand-with-real-life-examples",
+			                            title: "SOLID Principle in Programming: Understand With Real Life Examples - GeeksforGeeks"
+			                        }]
+			                    },
+			                    {
+			                        topic: "REST Principles",
+			                        links: [{
+			                            url: "https://medium.com/future-vision/the-principles-of-rest-6b00deac91b3",
+			                            title: "How not to blow your REST interview | by Bivás Biswas | Future Vision | Medium"
+			                        }]
+			                    },
+			                    {
+			                        topic: "Design Patters",
+			                        links: [{
+			                                url: "https://www.javatpoint.com/proxy-pattern",
+			                                title: "Proxy Pattern - Javatpoint"
+			                            },
+			                            {
+			                                url: "https://www.javatpoint.com/decorator-pattern",
+			                                title: "Decorator Pattern - Javatpoint"
+			                            },
+			                            {
+			                                url: "https://www.javatpoint.com/adapter-pattern",
+			                                title: "Adapter Pattern - Javatpoint"
+			                            },
+			                            {
+			                                url: "https://www.javatpoint.com/factory-method-design-pattern",
+			                                title: "Factory Method Design Pattern - Javatpoint"
+			                            }
+			                        ]
+
+			                    },
+			                    {
+			                        topic: "OOPs Concepts"
+			                    }
+			                ]
+			            },
+
+			            {
+			                title: "Database Side",
+			                data: [{
+			                        topic: "SQL DB"
+			                    },
+			                    {
+			                        topic: "Table Partitioning"
+			                    },
+			                    {
+			                        topic: "DB Partitioning"
+			                    },
+			                    {
+			                        topic: "Indexing"
+			                    },
+			                    {
+			                        topic: "Write/Read Locking Mechanisms"
+			                    },
+			                    {
+			                        topic: "Transactions / Rollback"
+			                    },
+			                    {
+			                        topic: "Backups"
+			                    }
+			                ]
+			            }
+			        ]
+			    },
+			    methods: {
+
+			    }
+			})
+      
+   </script>
 </html>
