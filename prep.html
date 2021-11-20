@@ -4,130 +4,93 @@
    </head>
    <body>
       <div id="root">
-         <c-prep v-bind:data="data"/>
+         <item v-bind:title="title" v-bind:items="items"/>
       </div>
    </body>
    <script>
-			Vue.component('clink', {
-			    props: ['link'],
-			    template: '<a v-bind:href="link.url">{{ link.title }}</a>'
-			})
-
-			Vue.component('ctopic', {
-			    props: ['topic', 'links'],
+			Vue.component('item', {
+			    props: ['title', 'link', 'items'],
 			    template: `
-			        		<li>
-			      			<h3>{{ topic }}</h3>
-			      			<ul>
-			      			    <li v-for="link in links">
-			      			      <clink v-bind:link="link"/>
-			      				</li>
-			      		  </ul>
-			      		</li>
-			      `
+			    <div>
+				    <a v-if="link" v-bind:href="link"><h4>{{ title }}</h4></a>
+				    <h3 v-else>{{title}}</h3>
+				    <ol>
+				      	<li v-for="item in items">
+				      			<item v-bind:title="item.title" v-bind:link="item.link" v-bind:items="item.items"/>
+				      	</li>
+				    </ol>
+			    </div>
+			    `
 			})
 
-			Vue.component('c-section', {
-			    props: ['datas', 'title'],
-			    template: `
-			      		  <div>
-			      			  <h2>{{ title }}</h2>
-			      			  <ul>
-			      					<li v-for="data in datas">
-			      						<ctopic v-bind:topic="data.topic" v-bind:links="data.links"/>
-			      					</li>
-			      			  </ul>
-			      		</div>
-			      		`
-			})
-
-			Vue.component('c-prep', {
-			    props: ['data'],
-			    template: `
-			      		  <ul>
-			      		  			<li v-for="dt in data">
-			      						<c-section v-bind:title="dt.title" v-bind:datas="dt.data"/>
-			      					</li>
-			      		  </ul>
-			      		`
-			})
-
-
-
-
+	
 			var app = new Vue({
 			    el: '#root',
 			    data: {
-
-			        data: [{
-			                title: "Software Side",
-			                data: [{
-			                        topic: "Design Principles - S.O.L.I.D",
-			                        links: [{
-			                            url: "https://www.geeksforgeeks.org/solid-principle-in-programming-understand-with-real-life-examples",
-			                            title: "SOLID Principle in Programming: Understand With Real Life Examples - GeeksforGeeks"
-			                        }]
-			                    },
-			                    {
-			                        topic: "REST Principles",
-			                        links: [{
-			                            url: "https://medium.com/future-vision/the-principles-of-rest-6b00deac91b3",
-			                            title: "How not to blow your REST interview | by Bivás Biswas | Future Vision | Medium"
-			                        }]
-			                    },
-			                    {
-			                        topic: "Design Patters",
-			                        links: [{
-			                                url: "https://www.javatpoint.com/proxy-pattern",
-			                                title: "Proxy Pattern - Javatpoint"
-			                            },
-			                            {
-			                                url: "https://www.javatpoint.com/decorator-pattern",
-			                                title: "Decorator Pattern - Javatpoint"
-			                            },
-			                            {
-			                                url: "https://www.javatpoint.com/adapter-pattern",
-			                                title: "Adapter Pattern - Javatpoint"
-			                            },
-			                            {
-			                                url: "https://www.javatpoint.com/factory-method-design-pattern",
-			                                title: "Factory Method Design Pattern - Javatpoint"
-			                            }
-			                        ]
-
-			                    },
-			                    {
-			                        topic: "OOPs Concepts"
-			                    }
-			                ]
-			            },
-
-			            {
+			    	title: "Study Material",
+			    	items: [{
+			    		title: "Software Side",
+			    		items: [
+						    		{
+						    			title: "Design Principles - S.O.L.I.D",
+						    			link: "https://www.geeksforgeeks.org/solid-principle-in-programming-understand-with-real-life-examples"
+						    		},
+						    		{
+						    			title: "REST Principles",
+						    			link: "https://medium.com/future-vision/the-principles-of-rest-6b00deac91b3"
+						    		},
+						    		{
+						    			title: "Design Patterns",
+						    			items: [
+									    			{
+						                                link: "https://www.javatpoint.com/proxy-pattern",
+						                                title: "Proxy Pattern - Javatpoint"
+						                            },
+						                            {
+						                                link: "https://www.javatpoint.com/decorator-pattern",
+						                                title: "Decorator Pattern - Javatpoint"
+						                            },
+						                            {
+						                                link: "https://www.javatpoint.com/adapter-pattern",
+						                                title: "Adapter Pattern - Javatpoint"
+						                            },
+						                            {
+						                                link: "https://www.javatpoint.com/factory-method-design-pattern",
+						                                title: "Factory Method Design Pattern - Javatpoint"
+						                            }
+						    			]
+						    		},
+						    		{
+						    			title: "OOPs Concepts"
+						    		}
+			    		]
+			    	},
+			    	{
 			                title: "Database Side",
-			                data: [{
-			                        topic: "SQL DB"
+			                items: [{
+			                        title: "SQL DB"
 			                    },
 			                    {
-			                        topic: "Table Partitioning"
+			                        title: "Table Partitioning"
 			                    },
 			                    {
-			                        topic: "DB Partitioning"
+			                        title: "DB Partitioning"
 			                    },
 			                    {
-			                        topic: "Indexing"
+			                        title: "Indexing"
 			                    },
 			                    {
-			                        topic: "Write/Read Locking Mechanisms"
+			                        title: "Write/Read Locking Mechanisms"
 			                    },
 			                    {
-			                        topic: "Transactions / Rollback"
+			                        title: "Transactions / Rollback"
 			                    },
 			                    {
-			                        topic: "Backups"
+			                        title: "Backups"
 			                    }
 			                ]
 			            }
-			        ]
+			            ]
 			    },
 			    methods: {
 
