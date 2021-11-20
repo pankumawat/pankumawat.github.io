@@ -1,6 +1,19 @@
 <html>
    <head>
       <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+      <style type="text/css">
+      	.hide {
+      		display:  none;
+      	}
+      	.btn-more {
+      		border-style: none;
+      		background: white;
+      		font-weight: bold;
+      	}
+      	h4 {
+      		display: inline;
+      	}
+      </style>
    </head>
    <body>
       <div id="root">
@@ -8,19 +21,26 @@
       </div>
    </body>
    <script>
+   	let x;
 			Vue.component('item', {
-			    props: ['title', 'link', 'items'],
+			    props: ['title', 'link', 'items', 'desc'],
 			    template: `
 			    <div>
 				    <a v-if="link" v-bind:href="link"><h4>{{ title }}</h4></a>
-				    <h3 v-else>{{title}}</h3>
+				    <h4 v-else>{{title}}</h4>
+				    <button v-if="desc" class="btn-more" v-on:click="moreButton">>></button>
+				    <pre v-if="desc" class="more hide">{{desc}}
+				    </pre>
 				    <ol>
 				      	<li v-for="item in items">
-				      			<item v-bind:title="item.title" v-bind:link="item.link" v-bind:items="item.items"/>
+				      			<item v-bind:title="item.title" v-bind:link="item.link" v-bind:items="item.items" v-bind:desc="item.desc"/>
 				      	</li>
 				    </ol>
 			    </div>
-			    `
+			    `,
+			     methods: {
+			    	moreButton: (e) => { e.target.parentElement.querySelector(".more").classList.toggle("hide")}
+			    }
 			})
 
 	
@@ -28,73 +48,65 @@
 			    el: '#root',
 			    data: {
 			    	title: "Study Material",
-			    	items: [{
-			    		title: "Software Side",
-			    		items: [
-						    		{
-						    			title: "Design Principles - S.O.L.I.D",
-						    			link: "https://www.geeksforgeeks.org/solid-principle-in-programming-understand-with-real-life-examples"
-						    		},
-						    		{
-						    			title: "REST Principles",
-						    			link: "https://medium.com/future-vision/the-principles-of-rest-6b00deac91b3"
-						    		},
-						    		{
-						    			title: "Design Patterns",
-						    			items: [
-									    			{
-						                                link: "https://www.javatpoint.com/proxy-pattern",
-						                                title: "Proxy Pattern - Javatpoint"
-						                            },
-						                            {
-						                                link: "https://www.javatpoint.com/decorator-pattern",
-						                                title: "Decorator Pattern - Javatpoint"
-						                            },
-						                            {
-						                                link: "https://www.javatpoint.com/adapter-pattern",
-						                                title: "Adapter Pattern - Javatpoint"
-						                            },
-						                            {
-						                                link: "https://www.javatpoint.com/factory-method-design-pattern",
-						                                title: "Factory Method Design Pattern - Javatpoint"
-						                            }
-						    			]
-						    		},
-						    		{
-						    			title: "OOPs Concepts",
-									link: "https://www.youtube.com/watch?v=4SBGeBzgnfI"
-						    		}
-			    		]
-			    	},
-			    	{
-			                title: "Database Side",
-			                items: [{
-			                        title: "SQL DB"
-			                    },
-			                    {
-			                        title: "Table Partitioning"
-			                    },
-			                    {
-			                        title: "DB Partitioning"
-			                    },
-			                    {
-			                        title: "Indexing"
-			                    },
-			                    {
-			                        title: "Write/Read Locking Mechanisms"
-			                    },
-			                    {
-			                        title: "Transactions / Rollback"
-			                    },
-			                    {
-			                        title: "Backups"
-			                    }
-			                ]
-			            }
+			    	items: [
+						    	{
+						    		title: "Software Side",
+						    		desc: "This is some text",
+						    		items: [
+									    		{
+									    			title: "Design Principles - S.O.L.I.D",
+									    			link: "https://www.geeksforgeeks.org/solid-principle-in-programming-understand-with-real-life-examples",
+									    			desc: `
+Single Responsibility Principle (SRP)
+Open/Closed Principle
+Liskov’s Substitution Principle (LSP)
+Interface Segregation Principle (ISP)
+Dependency Inversion Principle (DIP)
+													`
+									    		},
+									    		{
+									    			title: "REST Principles",
+									    			link: "https://medium.com/future-vision/the-principles-of-rest-6b00deac91b3"
+									    		},
+									    		{
+									    			title: "Design Patterns",
+									    			items: [
+												    			{
+									                                link: "https://www.javatpoint.com/proxy-pattern",
+									                                title: "Proxy Pattern"
+									                            },
+									                            {
+									                                link: "https://www.javatpoint.com/decorator-pattern",
+									                                title: "Decorator Pattern"
+									                            },
+									                            {
+									                                link: "https://www.javatpoint.com/adapter-pattern",
+									                                title: "Adapter Pattern"
+									                            },
+									                            {
+									                                link: "https://www.javatpoint.com/factory-method-design-pattern",
+									                                title: "Factory Method Design Pattern"
+									                            }
+									    			]
+									    		},
+									    		{
+									    			title: "OOPs Concepts"
+									    		}
+						    		]
+						    	},
+						    	{
+						                title: "Database Side",
+						                items: [
+							                {title: "SQL DB"},
+							                {title: "Table Partitioning"},
+							                {title: "DB Partitioning"},
+							                {title: "Indexing"},
+							                {title: "Write/Read Locking Mechanisms"},
+							                {title: "Transactions / Rollback"},
+							                {title: "Backups"}
+						                ]
+						            }
 			            ]
-			    },
-			    methods: {
-
 			    }
 			})
       
