@@ -35,7 +35,7 @@
 			    props: ['title', 'link', 'items', 'desc'],
 			    template: `
 			    <div>
-				    <a v-if="link" v-bind:href="link"><h4>{{ title }}</h4></a>
+				    <a v-if="link" v-bind:href="link" target="_blank"><h4>{{ title }}</h4></a>
 				    <h4 v-else>{{title}}</h4>
 				    <button v-if="desc" class="btn-more" v-on:click="moreButton">>></button>
 				    <pre v-if="desc" class="more hide">{{desc}}
