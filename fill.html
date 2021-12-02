@@ -1,0 +1,68 @@
+<html>
+<style type="text/css">
+	td {
+		width: 50px;
+		height: 50px;
+		background: grey;
+		margin: 0px;
+		border-radius: 50%;
+	}
+</style>
+	<body>
+		<table id="table">
+			
+		</table>
+	</body>
+	<script type="text/javascript">
+		const rows = 14;
+		const cols = 30;
+		let html = "";
+		for (let row = 1; row <= rows; row++) {
+		    html += "<tr>";
+		    for (let col = 1; col <= cols; col++) {
+		        html += `<td id="${row}_${col}"></td>`;
+		    }
+		    html += "</tr>";
+		}
+
+		let color = "grey";
+		const items = [];
+		let clicked = 0;
+		setInterval(() => {
+		    if (items.length > 0) {
+		        items[0].click();
+		        items.shift();
+
+		        if (items.length == 0) {
+		            clicked = 0;
+		        }
+		    }
+		}, 0)
+
+		setInterval(() => {
+		    if (clicked == 0) {
+		        let col = Math.floor(Math.random() * cols + 1);
+		        let row = Math.floor(Math.random() * rows + 1);
+		        setTimeout(() => document.getElementById(`${row}_${col}`).click(), 100);
+		        color = color == "black" ? "grey" : "black";
+		        clicked = 1;
+		    }
+		}, 100)
+
+
+		document.getElementById("table").innerHTML = html;
+		Array.from(document.getElementsByTagName('td')).forEach(td => {
+		    td.addEventListener("click", (e) => {
+		        const _this = e.target;
+
+		        if (_this.style.background == color)
+		            return;
+		        _this.style.background = color;
+		        const row = parseInt(_this.id.split('_')[0]);
+		        const col = parseInt(_this.id.split('_')[1]);
+
+		        [`${row-1}_${col}`, `${row+1}_${col}`, `${row}_${col-1}`, `${row}_${col+1}`].map(loc => document.getElementById(loc)).forEach(itm => !!itm && items.push(itm));
+		    });
+		});
+	</script>
+</html>
