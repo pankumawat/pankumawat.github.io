@@ -24,7 +24,7 @@
 			const _match = document.getElementById('txt_match').value
 			const _extraMatch = document.getElementById('txt_extraMatch').value
 			let result = getMatches(_not, _match, _extraMatch);
-			document.getElementById("answers").innerHTML = result.length > 100 ? 'Too many matches.' : result.join(', ');
+			document.getElementById("answers").innerHTML = result.length > 1000 ? `Too many matches.   <br/></br> ${result.join('</br>')}` : result.join(', ');
 		}
 	</script>
 </head>
