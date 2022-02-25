@@ -29,11 +29,11 @@
 	</script>
 </head>
 <body>
-Doesn't Contain (BLACK)<br/><input type="text" id="txt_not" placeholder="Black Characters" pattern="[a-z]{,26}" onchange="uiCompute();" />
+Doesn't Contain (BLACK)<br/><input type="text" id="txt_not" placeholder="Black Characters" pattern="[a-z]{,26}" onkeyup="uiCompute();" />
 <hr/>
-Contain but in any order (YELLOW)<br/><input type="text" id="txt_extraMatch" placeholder="Yellow Characters"  pattern="[a-z]{,26}"  onchange="uiCompute();"/>
+Contain but in any order (YELLOW)<br/><input type="text" id="txt_extraMatch" placeholder="Yellow Characters"  pattern="[a-z]{,26}"  onkeyup="uiCompute();"/>
 <hr/>
-Exact match (GREEN)<br/><input type="text" id="txt_match" value="?????" placeholder="Green Characters"  pattern="[a-z\-]{5}"  onchange="uiCompute();"/>
+Exact match (GREEN)<br/><input type="text" id="txt_match" value="?????" placeholder="Green Characters"  pattern="[a-z\-]{5}"  onkeyup="uiCompute();"/>
 Replace ? with the matched character at its respective index. Keep all the indexes
 <hr/>
 
