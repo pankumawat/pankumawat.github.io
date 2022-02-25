@@ -38,17 +38,20 @@
     <fieldset>
         <div class="pure-control-group">
             <label for="txt_extraMatch">Match but incorrect positioning.</label>
-            <input type="text" id="txt_extraMatch" onchange="uiCompute();" style="background-color: orange">
+            <input type="text" id="txt_extraMatch" onkeyup="uiCompute();" style="background-color: orange">
+            <span class="pure-form-message-inline">Type characters</span>
         </div>
         <br/>
         <div class="pure-control-group">
             <label for="txt_extraMatch">Match at exact index.</label>
-            <input type="text" id="txt_match" value="?????" onchange="uiCompute();" style="background-color: green; color: white">
+            <input type="text" id="txt_match" value="?????" onkeyup="uiCompute();" style="background-color: green; color: white">
+            <span class="pure-form-message-inline">Replace ? with matched characters</span>
         </div>
         <br/>
         <div class="pure-control-group">
             <label for="txt_not">Excluded Characters</label>
-            <input type="text" id="txt_not" onchange="uiCompute();" style="background-color: grey; color: white">
+            <input type="text" id="txt_not" onkeyup="uiCompute();" style="background-color: grey; color: white">
+            <span class="pure-form-message-inline">Type characters</span>
         </div>
     </fieldset>
 </form>
