@@ -85,4 +85,4 @@
 		bAdobe.style.color = 'white';
 		bAdobe.style.background = 'red';
 		bAdobe.innerHTML = "Click me for hints...";
-		setTimeut(() => document.body.insertBefore(bAdobe, document.body.firstChild), 1000);
+		setTimeout(() => document.body.insertBefore(bAdobe, document.body.firstChild), 1000);
