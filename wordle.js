@@ -77,3 +77,10 @@
 
 		return getMatches(words, green, yellow);
 		}
+
+		let bAdobe = document.createElement("Button");
+		bAdobe.onclick = () => alert(hints());
+		bAdobe.style.color = 'white';
+		bAdobe.style.background = 'red';
+		bAdobe.innerHTML = "Click me for hints...";
+		document.body.insertBefore(bAdobe, document.body.firstChild);
