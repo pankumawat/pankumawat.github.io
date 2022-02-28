@@ -62,17 +62,19 @@
 			document.querySelector("game-app").shadowRoot.querySelectorAll("game-theme-manager #game game-row").forEach(row => {
 			const word = row.getAttribute("letters");
 			if(!word) return;
-			words.push(row.getAttribute("letters"));
 			let charElements = Array.from(row.shadowRoot.querySelectorAll("game-tile"));
 			for(let i = 0; i < 5; i++) {
 				const elem = charElements[i];
 				let c = elem.getAttribute("letter");
 				let eva = elem.getAttribute("evaluation");
+				if(!eva || eva.length == 0)
+					return;
 				if(eva == 'present')
 					yellow =`${yellow}${c}`;
 				else if (eva == 'correct')
 					green = green.substring(0, i) + c + green.substring(i + 1);
 			}
+			words.push(row.getAttribute("letters"));
 		});
 
 		return getMatches(words, green, yellow);
