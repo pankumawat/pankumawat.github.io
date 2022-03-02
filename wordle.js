@@ -41,9 +41,12 @@
 					if(!green.includes(c) && !yellow.includes(c)) grey = `${grey}${c}`;
 				}
 			});
+			
+			const Words = (word) => {
+				
+			}
 
-
-			return dictionary.filter(filterGREY).filter(filterGREEN).filter(filterYELLOW);
+			return dictionary.filter(filterGREY).filter(filterGREEN).filter(filterYELLOW).filter(word => !words.icludes(word));
 		}
 
 		const uiCompute = () => {
@@ -77,11 +80,11 @@
 			words.push(row.getAttribute("letters"));
 		});
 
-		return getMatches(words, green, yellow);
+		return getMatches(words, green, yellow).join(', ');
 		}
 		setTimeout(() => {
 					let bAdobe = document.createElement("Button");
-		bAdobe.onclick = () => alert(hints());
+		bAdobe.onclick = () =>  {let sol = hints(); alert((sol?.length > 0) ? sol : "Already there")};
 		bAdobe.style.color = 'white';
 		bAdobe.style.background = 'red';
 		bAdobe.innerHTML = "Click me for hints...";
