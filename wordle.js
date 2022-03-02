@@ -46,7 +46,7 @@
 				
 			}
 
-			return dictionary.filter(filterGREY).filter(filterGREEN).filter(filterYELLOW).filter(word => !words.icludes(word));
+			return dictionary.filter(filterGREY).filter(filterGREEN).filter(filterYELLOW).filter(word => !words.includes(word));
 		}
 
 		const uiCompute = () => {
