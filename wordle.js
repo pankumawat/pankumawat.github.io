@@ -4,7 +4,7 @@
 			green = green ?? '';
 			yellow = yellow ?? '';
 			let grey = '';
-			const yellowLoc = [];
+			let yellowLoc = [];
 
 			const filterGREY = (word) => (grey.split('').every(c => (green.includes(c) || yellow.includes(c) || word.indexOf(c) == -1)));
 
@@ -17,13 +17,16 @@
 			}
 
 			const filterYELLOW = (word) => {
+
+				let hasAll = yellow.split('').every(c => word.includes(c));
+				if(!hasAll) return false;
+
+
 				for(let i = 0; i < 5; i++) {
 					const c = word.charAt(i);
-					if(!word.includes(c)) return false;
 					if(!!yellowLoc[i] && yellowLoc[i].includes(c))
 						return false;
 				}
-
 				return true;
 			}
 
@@ -32,19 +35,15 @@
 				const wordChars = word.split('');
 				for(let i = 0 ; i < 5; i++) {
 					const c = wordChars[i];
-					if(yellow.includes(c)) {
+					if(yellow.includes(c) && !green.includes(c)) {
 						if(!yellowLoc[i]) yellowLoc[i] = [];
 						yellowLoc[i].push(c);
-						console.dir(yellowLoc);
 					}
 					
 					if(!green.includes(c) && !yellow.includes(c)) grey = `${grey}${c}`;
 				}
 			});
-			
-			const Words = (word) => {
-				
-			}
+
 
 			return dictionary.filter(filterGREY).filter(filterGREEN).filter(filterYELLOW).filter(word => !words.includes(word));
 		}
