@@ -17,7 +17,7 @@
             if(!imgInput.files || imgInput.files.length == 0) return;
 
             const imageFile = imgInput.files[0];
-            const sizeInKb = Number(document.getElementById('sizeInKb').value);
+            let sizeInKb = Number(document.getElementById('sizeInKb').value);
             
             sizeInKb = Math.max(sizeInKb, 10);
             sizeInKb = Math.min(sizeInKb, 2000);
