@@ -1,0 +1,67 @@
+<html>
+<head>
+<title>Image Resize</title>
+</head>
+<body>
+    <div>
+        <input type = "number" id="sizeInKb" placeholder="Required Size in Kbs" value = "200"/> Kb
+        <br/><br/>
+        <input type="file" id="image-input" accept="image/*" onchange = "resize();">
+    </div>
+
+    <script>
+        let imgInput = document.getElementById('image-input');
+
+        function resize() {
+            if(!imgInput.files || imgInput.files.length == 0) return;
+
+            const imageFile = imgInput.files[0];
+            const sizeInKb = Number(document.getElementById('sizeInKb').value);
+            
+            sizeInKb = Math.max(sizeInKb, 10);
+            sizeInKb = Math.min(sizeInKb, 2000);
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                    var img = document.createElement("img");
+                    img.onload = function (event) {
+                        // Dynamically create a canvas element
+                        const getSize = (left, right) => {
+                            const h = (left + right) / 2;
+                            if(h < 10)
+                                return;
+                            const aspectRation = img.width / img.height
+                            const w = h * aspectRation;
+                            
+                            const canvas = document.createElement("canvas");
+                            const ctx = canvas.getContext("2d");
+                            
+                            // Actual resizing
+                            canvas.width = w;
+                            canvas.height = h;
+                            ctx.drawImage(img, 0, 0, w, h);
+
+                            // Show resized image in preview element
+                            const dataurl = canvas.toDataURL(imageFile.type);
+                            const afterSize = Math.floor(dataurl.length/1024);
+                            const sizeDiff = (sizeInKb - afterSize);
+                            if(sizeDiff > -1 && sizeDiff < 20) {
+                                const link = document.createElement("a");
+                                  link.href = dataurl;
+                                  link.download = `min-${imageFile.name}`;
+                                  link.click();
+                            }
+                            else if(afterSize > sizeInKb) getSize(0, h);
+                            else getSize(h, right);
+                        }
+                        getSize(0, img.height);
+                    }
+                    img.src = e.target.result;
+                }
+            reader.readAsDataURL(imageFile);
+        }
+        
+    </script>
+</body>
+
+</html>
