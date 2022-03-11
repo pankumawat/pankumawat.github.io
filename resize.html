@@ -49,7 +49,7 @@
                             if(sizeDiff > -1 && sizeDiff < 20) {
                                 const link = document.createElement("a");
                                   link.href = dataurl;
-                                  link.download = `min-${imageFile.name}`;
+                                  link.download = `min-${sizeInKb}-${imageFile.name}`;
                                   link.click();
                             }
                             else if(afterSize > sizeInKb) getSize(0, h);
