@@ -2,12 +2,36 @@
 <head>
     <link rel="shortcut icon" type="image/x-icon" href="https://raw.githubusercontent.com/pankumawat/pankumawat.github.io/main/favicon.ico">
     <title>Image Resize</title>
+<style>
+
+* {
+    font-family: Copperplate;
+    font-size: 10vw;;
+}
+
+@media screen and (min-width: 1000px) {
+  * {
+     font-size: 30px;
+  }
+}
+
+label {
+    cursor: copy;
+    border-style: outset;
+    border-width: 4;
+    padding: 5px;
+    background: lightgrey;
+}
+</style>
 </head>
 <body>
     <div>
-        Required Size in Kbs <input type = "number" id="sizeInKb" value = "200"/> Kb
-        <br/><br/>
-        <input type="file" id="image-input" accept="image/*" onchange = "resize();">
+        Max size in Kbs
+        <br/>
+        <input type="number" id="sizeInKb" placeholder="Required Size in Kbs" value = "200" min="10" max="2000"/> Kb
+        <hr/>
+        <input type="file" id="image-input" accept="image/*" onchange = "resize();" class="custom-file-input" style="display:none;">
+        <label for="image-input">Select file</label>
     </div>
 
     <script>
