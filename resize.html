@@ -71,10 +71,11 @@ label {
                             const afterSize = Math.floor(dataurl.length/1024);
                             const sizeDiff = (sizeInKb - afterSize);
                             if(sizeDiff > -1 && sizeDiff < 20) {
-                                const link = document.createElement("a");
+                                  const link = document.createElement("a");
                                   link.href = dataurl;
                                   link.download = `min-${sizeInKb}-${imageFile.name}`;
                                   link.click();
+                                  imgInput.value = '';
                             }
                             else if(afterSize > sizeInKb) getSize(0, h);
                             else getSize(h, right);
