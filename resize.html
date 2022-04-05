@@ -42,7 +42,8 @@ label {
 
             const imageFile = imgInput.files[0];
             let sizeInKb = Number(document.getElementById('sizeInKb').value);
-            
+            if(imageFile.size <= sizeInKb * 1000)
+                return alert("Don't do drugs... The file is already less than the size that you requests");
             sizeInKb = Math.max(sizeInKb, 10);
             sizeInKb = Math.min(sizeInKb, 2000);
 
