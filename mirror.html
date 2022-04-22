@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<title>
+			Mirror
+		</title>
+	</head>
+
+	<body>
+		<video width="110%" height="110%" controls style="transform: rotateY(180deg); margin-left: -5%">
+
+		</video>
+	</body>
+
+	<script>
+		// Prefer camera resolution nearest to 1280x720.
+		var constraints = { audio: false, video: { width: 1280, height: 720 } };
+
+		navigator.mediaDevices.getUserMedia(constraints)
+		.then(function(mediaStream) {
+		  var video = document.querySelector('video');
+		  video.srcObject = mediaStream;
+		  video.onloadedmetadata = function(e) {
+		    video.play();
+		  };
+		})
+		.catch(function(err) { console.log(err.name + ": " + err.message); }); // always check for errors at the end.
+	</script>
+</html>
