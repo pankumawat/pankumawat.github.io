@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://localhost:63342/doctor/index.html#our-approch -->
+<html lang="en"><script>(function() {
+		window.addEventListener('message', function(event) {
+			if (
+				event.data &&
+				event.data.id &&
+				typeof event.data.id.startsWith === 'function' &&
+				event.data.id.startsWith('adobeExperienceCloudDebuggerContentMessagingIdentifier-')
+			) {
+				event.stopImmediatePropagation();
+			}
+		},
+		{capture: true});
+	})();</script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-1', data: data });
+			}
+			const DATA_LAYER_LOCAL_STORAGE_KEY =
+  "com.adobe.experiencePlatformDebugger.dataLayer.key";
+const dataLayerKey = window.localStorage.getItem(DATA_LAYER_LOCAL_STORAGE_KEY);
+
+if (dataLayerKey) {
+  // sindresorhus/on-change
+  // MIT - License
+  // https://github.com/sindresorhus/on-change
+  const PATH_SEPARATOR = ".";
+  const TARGET = Symbol("target");
+  const UNSUBSCRIBE = Symbol("unsubscribe");
+
+  const isPrimitive = value =>
+    value === null ||
+    (typeof value !== "object" && typeof value !== "function");
+
+  const isBuiltinWithoutMutableMethods = value =>
+    value instanceof RegExp || value instanceof Number;
+
+  const isBuiltinWithMutableMethods = value => value instanceof Date;
+
+  const concatPath = (path, property) => {
+    let ret = path;
+    if (property && property.toString) {
+      if (path) {
+        ret += PATH_SEPARATOR;
+      }
+
+      ret += property.toString();
+    }
+
+    return ret;
+  };
+
+  const walkPath = (path, callback) => {
+    let index;
+    let remainingPath = path;
+    while (remainingPath) {
+      index = remainingPath.indexOf(PATH_SEPARATOR);
+
+      if (index === -1) {
+        index = remainingPath.length;
+      }
+
+      callback(remainingPath.slice(0, index));
+
+      remainingPath = remainingPath.slice(index + 1);
+    }
+  };
+
+  const shallowClone = value => {
+    if (Array.isArray(value)) {
+      return value.slice();
+    }
+
+    return { ...value };
+  };
+
+  const onChange = (object, updateDataLayer, options = {}) => {
+    const proxyTarget = Symbol("ProxyTarget");
+    let inApply = false;
+    let changed = false;
+    let applyPath;
+    let applyPrevious;
+    let isUnsubscribed = false;
+    const equals = options.equals || Object.is;
+    let propCache = new WeakMap();
+    let pathCache = new WeakMap();
+    let proxyCache = new WeakMap();
+    let boundUpdateDataLayer;
+
+    const handleChange = (path, property, previous, value) => {
+      if (isUnsubscribed) {
+        return;
+      }
+
+      if (!inApply) {
+        boundUpdateDataLayer(concatPath(path, property), value, previous);
+        return;
+      }
+
+      if (
+        inApply &&
+        applyPrevious &&
+        previous !== undefined &&
+        value !== undefined &&
+        property !== "length"
+      ) {
+        let item = applyPrevious;
+
+        if (path !== applyPath) {
+          const appliedPath = path.replace(applyPath, "").slice(1);
+
+          walkPath(appliedPath, key => {
+            item[key] = shallowClone(item[key]);
+            item = item[key];
+          });
+        }
+
+        item[property] = previous;
+      }
+
+      changed = true;
+    };
+
+    const getOwnPropertyDescriptor = (target, property) => {
+      let props = propCache ? propCache.get(target) : undefined;
+
+      if (props) {
+        return props;
+      }
+
+      props = new Map();
+      propCache.set(target, props);
+
+      let prop = props.get(property);
+      if (!prop) {
+        prop = Reflect.getOwnPropertyDescriptor(target, property);
+        props.set(property, prop);
+      }
+
+      return prop;
+    };
+
+    const invalidateCachedDescriptor = (target, property) => {
+      const props = propCache ? propCache.get(target) : undefined;
+
+      if (props) {
+        props.delete(property);
+      }
+    };
+
+    const buildProxy = (value, path) => {
+      if (isUnsubscribed) {
+        return value;
+      }
+
+      pathCache.set(value, path);
+
+      let proxy = proxyCache.get(value);
+
+      if (proxy === undefined) {
+        proxy = new Proxy(value, handler);
+        proxyCache.set(value, proxy);
+      }
+
+      return proxy;
+    };
+
+    const unsubscribe = target => {
+      isUnsubscribed = true;
+      propCache = null;
+      pathCache = null;
+      proxyCache = null;
+
+      return target;
+    };
+
+    const ignoreChange = property =>
+      isUnsubscribed ||
+      (options.ignoreSymbols === true && typeof property === "symbol");
+
+    const handler = {
+      get(target, property, receiver) {
+        if (property === proxyTarget || property === TARGET) {
+          return target;
+        }
+
+        if (property === UNSUBSCRIBE && pathCache.get(target) === "") {
+          return unsubscribe(target);
+        }
+
+        const value = Reflect.get(target, property, receiver);
+        if (
+          isPrimitive(value) ||
+          isBuiltinWithoutMutableMethods(value) ||
+          property === "constructor" ||
+          options.isShallow === true
+        ) {
+          return value;
+        }
+
+        // Preserve invariants
+        const descriptor = getOwnPropertyDescriptor(target, property);
+        if (descriptor && !descriptor.configurable) {
+          if (descriptor.set && !descriptor.get) {
+            return undefined;
+          }
+
+          if (descriptor.writable === false) {
+            return value;
+          }
+        }
+
+        return buildProxy(value, concatPath(pathCache.get(target), property));
+      },
+
+      set(target, property, value, receiver) {
+        const proxyTargetValue =
+          value && value[proxyTarget] !== undefined
+            ? value[proxyTarget]
+            : value;
+
+        const ignore = ignoreChange(property);
+        const previous = ignore
+          ? null
+          : Reflect.get(target, property, receiver);
+        const result = Reflect.set(
+          target[proxyTarget] || target,
+          property,
+          proxyTargetValue
+        );
+
+        if (!ignore && !equals(previous, proxyTargetValue)) {
+          handleChange(
+            pathCache.get(target),
+            property,
+            previous,
+            proxyTargetValue
+          );
+        }
+
+        return result;
+      },
+
+      defineProperty(target, property, descriptor) {
+        const result = Reflect.defineProperty(target, property, descriptor);
+
+        if (!ignoreChange(property)) {
+          invalidateCachedDescriptor(target, property);
+
+          handleChange(
+            pathCache.get(target),
+            property,
+            undefined,
+            descriptor.value
+          );
+        }
+
+        return result;
+      },
+
+      deleteProperty(target, property) {
+        if (!Reflect.has(target, property)) {
+          return true;
+        }
+
+        const ignore = ignoreChange(property);
+        const previous = ignore ? null : Reflect.get(target, property);
+        const result = Reflect.deleteProperty(target, property);
+
+        if (!ignore) {
+          invalidateCachedDescriptor(target, property);
+
+          handleChange(pathCache.get(target), property, previous);
+        }
+
+        return result;
+      },
+
+      apply(target, thisArg, argumentsList) {
+        const compare = isBuiltinWithMutableMethods(proxyTargetThisArg);
+
+        const proxyTargetThisArg = compare ? thisArg[proxyTarget] : thisArg;
+
+        if (!inApply) {
+          inApply = true;
+
+          if (compare) {
+            applyPrevious = proxyTargetThisArg.valueOf();
+          }
+
+          if (
+            Array.isArray(proxyTargetThisArg) ||
+            toString.call(proxyTargetThisArg) === "[object Object]"
+          ) {
+            applyPrevious = shallowClone(proxyTargetThisArg[proxyTarget]);
+          }
+
+          applyPath = pathCache.get(target);
+          applyPath = applyPath.slice(
+            0,
+            Math.max(applyPath.lastIndexOf(PATH_SEPARATOR), 0)
+          );
+
+          const result = Reflect.apply(
+            target,
+            proxyTargetThisArg,
+            argumentsList
+          );
+
+          inApply = false;
+
+          if (
+            changed ||
+            (compare && !equals(applyPrevious, proxyTargetThisArg.valueOf()))
+          ) {
+            handleChange(
+              applyPath,
+              "",
+              applyPrevious,
+              proxyTargetThisArg[proxyTarget] || proxyTargetThisArg
+            );
+            applyPrevious = null;
+            changed = false;
+          }
+
+          return result;
+        }
+
+        return Reflect.apply(target, proxyTargetThisArg, argumentsList);
+      }
+    };
+
+    const proxy = buildProxy(object, "");
+    boundUpdateDataLayer = updateDataLayer.bind(proxy);
+
+    return proxy;
+  };
+
+  onChange.target = proxy => proxy[TARGET] || proxy;
+  onChange.unsubscribe = proxy => proxy[UNSUBSCRIBE] || proxy;
+
+  let proxy;
+  let previousDataLayer;
+
+  function _serialize(dataLayer) {
+    try {
+      return JSON.stringify({ ...dataLayer }, null, 2);
+    } catch (e) {
+      return JSON.stringify(dataLayer, null, 2);
+    }
+  }
+
+  function _notify(dataLayer) {
+    contentScriptEventTrigger({
+      data: {
+        dataLayer
+      },
+      timestamp: Date.now(),
+      timeSincePageLoad: window.performance.now()
+    });
+  }
+
+  function onDataLayerUpdate() {
+    const dataLayer = _serialize(this);
+
+    if (previousDataLayer !== dataLayer) {
+      previousDataLayer = dataLayer;
+      _notify(dataLayer);
+    }
+  }
+
+  function onDataLayerSet(newDataLayer) {
+    const dataLayer = _serialize(newDataLayer);
+    if (!previousDataLayer || previousDataLayer !== dataLayer) {
+      previousDataLayer = dataLayer;
+      _notify(dataLayer);
+    }
+  }
+
+  Object.defineProperty(window, dataLayerKey, {
+    get() {
+      return proxy;
+    },
+    set(newDataLayer) {
+      onDataLayerSet(newDataLayer);
+      proxy = onChange(newDataLayer, onDataLayerUpdate);
+    },
+    enumerable: true,
+    configurable: true
+  });
+
+  const oldObjectDefine = Object.defineProperty.bind(Object);
+  Object.defineProperty = (obj, prop, descriptor) => {
+    if (prop === dataLayerKey) {
+      console.debug(
+        "Data layer being overwritten by Object.defineProperty(). Falling back to polling..."
+      );
+
+      function pollForChanges() {
+        const dataLayer = _serialize(window[dataLayerKey]);
+        if (previousDataLayer !== dataLayer) {
+          previousDataLayer = dataLayer;
+          _notify(dataLayer);
+        }
+        window.requestAnimationFrame(pollForChanges);
+      }
+
+      window.requestAnimationFrame(pollForChanges);
+    }
+    return oldObjectDefine(obj, prop, descriptor);
+  };
+}
+
+		})();
+	</script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-2', data: data });
+			}
+			// https://github.com/adobe/alloy/wiki/Monitoring-Hooks
+
+// This script is run within an immediately executed function, so variables declared here
+// are local to this script only.
+const orgIdsByInstanceName = {};
+
+window.__alloyMonitors = window.__alloyMonitors || [];
+window.__alloyMonitors.push({
+  onBeforeNetworkRequest(data) {
+    setTimeout(() => {
+      contentScriptEventTrigger({
+        name: "onAlloyNetworkRequest",
+        data: {
+          ...data,
+          orgId: orgIdsByInstanceName[data.instanceName]
+        }
+      });
+    });
+  },
+  onNetworkResponse(data) {
+    // There are fields in data that don't serialize well, so we only include parsedBody
+    setTimeout(() => {
+      contentScriptEventTrigger({
+        name: "onAlloyNetworkResponse",
+        data: {
+          parsedBody: data.parsedBody,
+          orgId: orgIdsByInstanceName[data.instanceName]
+        }
+      });
+    });
+  },
+  onNetworkError(data) {
+    setTimeout(() => {
+      contentScriptEventTrigger({ name: "onAlloyNetworkError", data });
+    });
+  },
+  onInstanceConfigured(data) {
+    // We keep a cache of orgIdsByInstanceNames here because the response to getLibraryInfo
+    // may happen after a network request already occurred.
+    orgIdsByInstanceName[data.instanceName] = data.config.orgId;
+    setTimeout(() => {
+      window[data.instanceName]("getLibraryInfo").then(({ libraryInfo }) => {
+        // The configuration section uses debugEnabled to know the initial state
+        const debugEnabledSessionStorage = window.sessionStorage.getItem(
+          `com.adobe.alloy.instance.${data.instanceName}.debug`
+        );
+        const debugEnabled =
+          debugEnabledSessionStorage === "true" ||
+          (data.config.debugEnabled && debugEnabledSessionStorage === null);
+
+        contentScriptEventTrigger({
+          name: "onInstanceConfigured",
+          data: {
+            namespace: data.instanceName,
+            edgeConfigId: data.config.edgeConfigId,
+            edgeDomain: data.config.edgeDomain,
+            orgId: data.config.orgId,
+            // we only use the version (for now), so we don't need to send anything else.
+            libraryInfo: {
+              version: libraryInfo.version
+            },
+            debugEnabled
+          }
+        });
+      });
+    });
+  }
+});
+
+		})();
+	</script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-3', data: data });
+			}
+			/**
+ * Hooks into both DTM's and Launch's logging mechanisms in order to capture all log messages and
+ * send them to the UI to display to the user
+ */
+function notifyContentScript(log) {
+  contentScriptEventTrigger({
+    data: log,
+    timestamp: Date.now(),
+    timeSincePageLoad: window.performance.now()
+  });
+}
+
+// Create a stub _satellite with the common methods. Without this, this injected script will
+// break pages that have logic on them like "window._satellite && window._satellite.pageBottom()"
+const noop = () => {};
+const satelliteStub = {};
+[
+  "getVar",
+  "getVisitorId",
+  "notify",
+  "pageBottom",
+  "readCookie",
+  "setCookie",
+  "setDebug",
+  "setVar",
+  "track"
+].forEach(prop => {
+  satelliteStub[prop] = noop;
+});
+
+window._satellite = {
+  ...satelliteStub,
+  ...window._satellite
+};
+window._satellite.override = window._satellite.override || {};
+
+// Hook into _satellite in order to capture DTM logs
+if (window.Object && window.Object.defineProperty) {
+  window.Object.defineProperty(
+    window._satellite.override,
+    "adobe.aepDebugger.dtmInitHook",
+    {
+      enumerable: true,
+      get() {
+        onSatelliteInit();
+        return "";
+      },
+      set() {}
+    }
+  );
+}
+
+function onSatelliteInit() {
+  // This function will run when DTM is loaded on the page. We use it to hook into DTM logs
+  const _satellite = window._satellite;
+  if (_satellite.Logger) {
+    _satellite.Logger.keepLimit = 9999;
+  }
+
+  // override notify
+  // Reason: we want to intercept messages that go through here
+  // without worrying about limits or messing anything up internally
+  const originalNotify = _satellite.notify;
+  _satellite.notify = (message, level) => {
+    const logLevel = ["log", "log", "log", "info", "warn", "error"];
+
+    // call original
+    originalNotify(message, level);
+
+    const log = {
+      solution: "dtm",
+      solutions: ["dtm"],
+      level: logLevel[level] || "log",
+      message: ""
+    };
+
+    // make sure that we have a message
+    if (message && typeof message === "string") {
+      // only add it
+      log.message = message;
+
+      // check to see what solution it came from
+      if (message.indexOf("Adobe Analytics:") !== -1) {
+        log.solutions.push("analytics");
+      } else if (message.indexOf("Test & Target:") !== -1) {
+        log.solutions.push("target");
+      } else if (message.indexOf("Visitor ID:") !== -1) {
+        log.solutions.push("visitorService");
+      } else if (message.indexOf("AdLens:") !== -1) {
+        log.solutions.push("mediaOptimizer");
+      }
+    }
+    notifyContentScript(log);
+  };
+}
+
+function _overrideConsoleLogFunction(prefix, solution, level) {
+  const originalFunction = console[level];
+  console[level] = (...args) => {
+    const argsAsArray = Array.prototype.slice.call(args);
+    originalFunction.apply(console, argsAsArray);
+    const mappedArgs = argsAsArray.map(arg => {
+      let result = "";
+      if (arg && typeof arg.toString === "function") {
+        result = arg.toString();
+      }
+      if (!result || result === "[object Object]") {
+        try {
+          result = JSON.stringify(arg);
+        } catch (e) {
+          return "";
+        }
+      }
+      return result;
+    });
+
+    const message = mappedArgs.join(" ");
+
+    if (typeof message === "string") {
+      if (message.indexOf(prefix) === 0) {
+        const log = {
+          solution,
+          solutions: [solution],
+          level,
+          message,
+          searchIndex: message,
+          params: mappedArgs
+        };
+
+        // check to see what solution it came from
+        if (message.indexOf("[Adobe Analytics]") !== -1) {
+          log.solutions.push("analytics");
+        } else if (message.indexOf("[Adobe Target]") !== -1) {
+          log.solutions.push("target");
+        } else if (message.indexOf("[Experience Cloud ID Service]") !== -1) {
+          log.solutions.push("visitorService");
+        } else if (message.indexOf("[Adobe Media Optimizer]") !== -1) {
+          log.solutions.push("mediaOptimizer");
+        }
+        notifyContentScript(log);
+      }
+    }
+  };
+}
+
+/**
+ * Overrides the various console.* methods in order to intercept messages that
+ * are sent to the console by launch. A message was sent be launch if it starts
+ * with the rocket emoji 🚀. Note that this is a somewhat brittle solution
+ * since if the emoji ever changes this integration will break. However this
+ * is the only solution that works for now.
+ *
+ * Any messages that are not prefixed with the rocket emoji are ignored and passed
+ * through to the original console function
+ */
+function _overrideConsoleForLaunch() {
+  const prefix = "\uD83D\uDE80";
+  ["error", "info", "log", "warn"].forEach(
+    _overrideConsoleLogFunction.bind(null, prefix, "launch")
+  );
+}
+
+/**
+ * Intercepts console messages made by alloy (prefixed with [alloy]) and notifies content script about each one.
+ * Note that this is a brittle solution and should not be used long term.
+ *
+ * Ideally there will be some debugging hooks built into alloy itself that we can connect to
+ */
+function _overrideConsoleForAlloy() {
+  window.__alloyNS = [];
+  const originalPush = window.__alloyNS.push;
+  window.__alloyNS.push = (namespace, ...rest) => {
+    ["error", "info", "log", "warn"].forEach(
+      _overrideConsoleLogFunction.bind(null, `[${namespace}]`, "alloy")
+    );
+
+    originalPush.apply(
+      window.__alloyNS,
+      Array.prototype.slice.call([namespace, ...rest])
+    );
+  };
+}
+
+/**
+ * Overrides console.debug and console.warn methods in order to intercept messages that
+ * are sent to the console by at.js. A message was sent be at.js if it starts
+ * with "AT:".
+ *
+ * Note that this is a somewhat brittle solution
+ * since if the prefix ever changes this integration will break. However this
+ * is the only solution that works for now, since at.js does not have any debugging hooks.
+ * If this ever breaks, the first place to look is at the logger implementation in at.js
+ * to see if they changed the prefix or started using different console functions. Check
+ * https://git.corp.adobe.com/TnT/atjs-library-v2/blob/master/src/delivery/monitoring/logger/helper.js
+ *
+ * Any messages that are not prefixed with "AT:" are ignored and passed
+ * through to the original console function
+ */
+function _overrideConsoleForAtJs() {
+  const prefix = "AT:";
+  ["debug", "warn"].forEach(
+    _overrideConsoleLogFunction.bind(null, prefix, "target")
+  );
+}
+
+_overrideConsoleForLaunch();
+_overrideConsoleForAlloy();
+_overrideConsoleForAtJs();
+
+// Once the page has finished loading, remove _satellite if both DTM and Launch were not found
+window.addEventListener("load", () => {
+  if (!_hasDtm() && !_hasLaunch()) {
+    delete window._satellite;
+  }
+});
+
+/**
+ * @returns {boolean} whether launch is present on the page
+ */
+function _hasLaunch() {
+  return !!(window._satellite && window._satellite._container);
+}
+
+/**
+ * @returns {boolean} whether DTM is present on the page
+ */
+function _hasDtm() {
+  return !!(window._satellite && window._satellite.configurationSettings);
+}
+
+		})();
+	</script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-4', data: data });
+			}
+			window.___target_traces = window.___target_traces || [];
+const originalPush = window.___target_traces.push;
+
+window.___target_traces.push = function targetTracePush(trace) {
+  contentScriptEventTrigger({ trace });
+  originalPush.call(this, trace);
+};
+
+		})();
+	</script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>CUcaFIT Clinic</title>
+
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Tooplate">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link rel="stylesheet" href="./cucafit_files/bootstrap.min.css">
+    <link rel="stylesheet" href="./cucafit_files/font-awesome.min.css">
+    <link rel="stylesheet" href="./cucafit_files/animate.css">
+    <link rel="stylesheet" href="./cucafit_files/owl.carousel.css">
+    <link rel="stylesheet" href="./cucafit_files/owl.theme.default.min.css">
+
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="./cucafit_files/tooplate-style.css">
+
+</head>
+<body id="top" data-spy="scroll" data-target=".navbar-collapse" data-offset="50">
+
+<!-- PRE LOADER -->
+<section class="preloader" style="display: none;">
+    <div class="spinner">
+        <span class="spinner-rotate"></span>
+    </div>
+</section>
+
+
+<!-- HEADER -->
+<header>
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-4 col-sm-5 clinic-name">
+                <p>Powered by </p><img width="60" src="./cucafit_files/saqsham.png" alt="Saqsham Ortho">
+            </div>
+
+            <div class="col-md-8 col-sm-7 text-align-right">
+                <span class="phone-icon"><i class="fa fa-phone"></i> <a href="tel:+919899900143">+91-9899900143</a></span>
+                 <span class="phone-icon"><i class="fa fa-whatsapp" aria-hidden="true"></i> <a href="https://wa.me/+919899900143" target="_blank">+91-9899900143</a></span>
+                 <span class="date-icon"><i class="fa fa-calendar-plus-o"></i> 6:00 AM - 10:00 PM (Mon-Fri)</span>
+            </div>
+
+        </div>
+    </div>
+</header>
+
+
+<!-- MENU -->
+<div id="sticky-wrapper" class="sticky-wrapper is-sticky" style="height: 70px;"><section class="navbar navbar-default navbar-static-top" role="navigation" style="width: 1704px; position: fixed; top: 0px;">
+    <div class="container">
+
+        <div class="navbar-header">
+            <button class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon icon-bar"></span>
+                <span class="icon icon-bar"></span>
+                <span class="icon icon-bar"></span>
+            </button>
+
+            <!-- lOGO TEXT HERE -->
+            <a href="http://localhost:63342/doctor/index.html" class="navbar-brand"></a>
+        </div>
+
+        <!-- MENU LINKS -->
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="http://localhost:63342/doctor/index.html#top" class="smoothScroll">Home</a></li>
+                <li><a href="http://localhost:63342/doctor/index.html#about" class="smoothScroll">About Us</a></li>
+                <li><a href="http://localhost:63342/doctor/index.html#OurPhysiotherapyExperts" class="smoothScroll">Physiotherapy Experts</a></li>
+                <li><a href="http://localhost:63342/doctor/index.html#OurPhysiotherapyMentors" class="smoothScroll">Mentors</a></li>
+                <li><a href="http://localhost:63342/doctor/index.html#our-approach" class="smoothScroll">Approach</a></li>
+                <li><a href="http://localhost:63342/doctor/index.html#our-machines" class="smoothScroll">Machines</a></li>
+                <li class="active"><a href="http://localhost:63342/doctor/index.html#google-map" class="smoothScroll">Contact</a></li>
+                <li class="appointment-btn"><a href="http://localhost:63342/doctor/index.html#appointment">Make an appointment</a></li>
+            </ul>
+        </div>
+
+    </div>
+</section></div>
+
+
+<!-- HOME -->
+<section id="home" class="slider" data-stellar-background-ratio="0.5" style="background-position: 0px 2306.75px;">
+    <div class="container">
+        <div class="row">
+            <div class="item home-banner">
+                <div class="caption">
+                    <div class="col-md-offset-1 col-md-10 clinic-details">
+                        <h1>CUcuFIT Clinic</h1>
+                        <h3>Put at ease</h3>
+                        <hr>
+                        <a href="http://localhost:63342/doctor/index.html#OurPhysiotherapyExperts" class="section-btn btn btn-default smoothScroll">Meet our Doctors</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ABOUT -->
+<section id="about">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6">
+                <div class="about-info">
+                    <h2 class="wow fadeInUp" data-wow-delay="0.6s" style="visibility: hidden; animation-delay: 0.6s; animation-name: none;">CUcuFIT Clinic</h2>
+                    <div class="wow fadeInUp" data-wow-delay="0.8s" style="visibility: hidden; animation-delay: 0.8s; animation-name: none;">
+                        <p>Cucafit clinic is an advance and pre-eminent physiotherapy clinic with latest and liable modalities.</p>
+                        <p>Cucafit clinic also have experienced, diligent and empathetic physical therapists with refined knowledge accompanied by greatest orthopaedic surgeons.</p>
+                    </div>
+<!--                    <figure class="profile wow fadeInUp" data-wow-delay="1s">-->
+<!--                        <img src="images/author-image.jpg" class="img-responsive" alt="">-->
+<!--                        <figcaption>-->
+<!--                            <h3>Dr. Neil Jackson</h3>-->
+<!--                            <p>General Principal</p>-->
+<!--                        </figcaption>-->
+<!--                    </figure>-->
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- TEAM -->
+<section id="team" data-stellar-background-ratio="1" style="background-position: 0px 0px;">
+    <div class="container">
+        <div class="row" id="OurPhysiotherapyExperts">
+            <div class="col-md-about-info6 col-sm-6">
+                <div class="">
+                    <h2 class="wow fadeInUp" data-wow-delay="0.1s" style="visibility: hidden; animation-delay: 0.1s; animation-name: none;">Our Physiotherapy Experts</h2>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <div class="col-md-6 col-sm-8">
+                <div class="team-thumb wow fadeInUp" data-wow-delay="0.1s" style="visibility: hidden; animation-delay: 0.1s; animation-name: none;">
+                    <img src="./cucafit_files/dr_nishant_g.jpeg" class="img-responsive" alt="Dr. Nishant Gemini">
+                    <div class="team-info">
+                        <h3>Dr. Nishant Gemini</h3>
+                        <p>BPT, M.P.T. (Sports), MIAP, M.D(AM), IASTM, KTT</p>
+                        <p>HOD physiotherapy - Primus super speciality hospital Chanakyapuri, New Delhi</p>
+                        <hr>
+                        <p>Dr. Nishant Gemini has treated more than 8,000 patients together with his team and has more than 20 years of proficiency in treating the toughest conditions.</p>
+                        <p>He has more than 20 years of experience. He specializes in musculoskeletal manipulation in Maitland's technique as well as the masters in sports rehabilitation.</p>
+                        <p>He is also in the expert panel of Examiner in various universities of Delhi, U.P., Haryana, Uttarakhand and Rajasthan.</p>
+                        <p>He has been the chief Coordinator of training programs for students from various collages in India A multidisciplinary team of highly trained, qualified and experienced Rehabilitation Professionals supports him.</p>
+                        <p>Several eminent Therapists are associated with the clinic for on-going intensive training of therapists and treatment of complex disorders.</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-6 col-sm-8">
+                <div class="team-thumb wow fadeInUp" data-wow-delay="0.1s" style="visibility: hidden; animation-delay: 0.1s; animation-name: none;">
+                    <img src="./cucafit_files/dr_pradeep_s.jpeg" class="img-responsive" alt="Dr pradeep sharma">
+                    <div class="team-info">
+                        <h3>Dr Pradeep Sharma (PT)</h3>
+                        <p>BPT, MIAP, MDCPTOT</p>
+                        <p>International certification as a dry needling practitioner and Mckenzie method for exercise.</p>
+                        <p>Certified spine manipulative therapist. Formerly at Primus super speciality hospital, Chanakyapuri, New delhi and CK Birla Hospital, Gurugram.</p>
+                        <hr>
+                        <p>Dr. Pradeep sharma is a leading physiotherapist with rich and extensive experience in orthopaedics, sports injury, cardiopulmonary and neurological rehabilitation.</p>
+                        <p>He has handled numerous composite and complex rehabilitation cases. And is known for precise diagnosis and meticulous nature.</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row" id="OurPhysiotherapyMentors">
+            <div class="col-md-6 col-sm-6">
+                <div class="about-info">
+                    <h2 class="wow fadeInUp" data-wow-delay="0.1s" style="visibility: hidden; animation-delay: 0.1s; animation-name: none;">Our Orthopaedic Mentors</h2>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+            <div class="col-md-6 col-sm-8">
+                <div class="team-thumb wow fadeInUp" data-wow-delay="0.1s" style="visibility: hidden; animation-delay: 0.1s; animation-name: none;">
+                    <img src="./cucafit_files/dr_debashish_c.jpeg" class="img-responsive" alt="Dr. Debashish Chanda">
+                    <div class="team-info">
+                        <h3>Dr. Debashish Chanda</h3>
+                        <p>MBBS and MS from Guwahati Medical College (Assam)</p>
+                        <p>Fellowship in Computer Navigation Surgeries from Lilavati Hospital, Mumbai</p>
+                        <p>Advanced Navigation System Program with Brainlab in Germany and Navio Robotic Arm program by Smith and Nephew</p>
+                        <hr>
+                        <p>Dr Debashish Chanda is an accomplished orthopaedic surgeon. He has a rich clinical experience of over 14 years in which he has performed more than 4000 joint replacements and over 2000 computer navigation assisted replacement surgeries.</p>
+                        <p>Dr Debashish is one of the very few surgeons trained in Germany on robotic-assisted knee &amp; hip surgeries. He has worked with some of the best hospitals across India and Europe including Lilavati Hospital (Mumbai), Breach Candy hospital (Mumbai), Maulana Azad Medical</p>
+
+                        <p>College (Delhi), LNJP (Delhi), Columbia Asia hospital (Gurgaon) ASKLEPIOS hospital (Germany).</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-6 col-sm-8">
+                <div class="team-thumb wow fadeInUp" data-wow-delay="0.1s" style="visibility: hidden; animation-delay: 0.1s; animation-name: none;">
+                    <img src="./cucafit_files/dr_reetadyuti_m.jpeg" class="img-responsive" alt="Dr Reetadyuti Mukhopadhyay">
+                    <div class="team-info">
+                        <h3>Dr Reetadyuti Mukhopadhyay</h3>
+                        <p>MBBS, MS (Orthopaedics), DNB &amp; MNAMS (Orthopaedics)</p>
+                        <p>Fellowship in Advanced Shoulder Surgeries (NHS, UK), Fellowship in Arthroscopy and Sports Injuries (Germany &amp; Hong Kong)</p>
+
+                        <hr>
+                        <p>He brings over 13 years of experience having done more than 4000 ACL, 700+ PCL surgeries, 5000+ meniscus surgeries, 3000+ rotator cuff repairs and
+                            3000+ bankart repairs. He has worked with top-notch institutions in this field including - Sports Injury Centre, Safdarjung Hospital (Delhi), TUM
+                            (Munich, Germany), Queen Mary Hospital (Hong Kong), Wrightington (NHS, UK).</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- NEWS -->
+<section id="our-approach" class="machines" data-stellar-background-ratio="2.5" style="background-position: 0px -2703.05px;">
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <!-- SECTION TITLE -->
+                <div class="section-title wow fadeInUp" data-wow-delay="0.1s" style="visibility: hidden; animation-delay: 0.1s; animation-name: none;">
+                    <h2>Dur Approacm</h2>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-4">
+                <!-- NEWS THUMB -->
+                <div class="machines-thumb wow fadeInUp" data-wow-delay="0.4s" style="visibility: hidden; animation-delay: 0.4s; animation-name: none;">
+                    <div class="machines-info">
+                        <img src="./cucafit_files/evaluation.jpeg" class="img-responsive" alt="" style="margin: auto">
+                        <h4>Evaluation</h4>
+                        <p>Chief complains, history, observation, examination and palpation</p>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-3 col-sm-4">
+                <!-- NEWS THUMB -->
+                <div class="machines-thumb wow fadeInUp" data-wow-delay="0.4s" style="visibility: hidden; animation-delay: 0.4s; animation-name: none;">
+                    <div class="machines-info">
+                        <img src="./cucafit_files/diagnosis.jpeg" class="img-responsive" alt="" style="margin: auto">
+                        <h4>Diagnosis</h4>
+                        <p>Identifying a disease, condition or injury from its signs and symptoms</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-4">
+                <!-- NEWS THUMB -->
+                <div class="machines-thumb wow fadeInUp" data-wow-delay="0.4s" style="visibility: hidden; animation-delay: 0.4s; animation-name: none;">
+                    <div class="machines-info">
+                        <img src="./cucafit_files/treatment.jpeg" class="img-responsive" alt="" style="margin: auto">
+                        <h4>Treatment</h4>
+                        <p>Through a skilled manual, electro or exercise therapy and patient education or advice for treating an injury, ailment or deformity</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-4">
+                <!-- NEWS THUMB -->
+                <div class="machines-thumb wow fadeInUp" data-wow-delay="0.4s" style="visibility: hidden; animation-delay: 0.4s; animation-name: none;">
+                    <div class="machines-info">
+                        <img src="./cucafit_files/home-protocol.jpeg" class="img-responsive" alt="" style="margin: auto">
+                        <h4>Home protocol</h4>
+                        <p>Set of exercises and precautions, according to the disease/condition/ injury</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section id="our-machines" class="machines" data-stellar-background-ratio="2.5" style="background-position: 0px -2043.05px;">
+    <br>
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-12 col-sm-12">
+                <!-- SECTION TITLE -->
+                <div class="section-title wow fadeInUp" data-wow-delay="0.1s" style="visibility: hidden; animation-delay: 0.1s; animation-name: none;">
+                    <h2>Our Modalities</h2>
+                    <h4>Cucaflt has unexcelled, FDA approved modalities with the latest technology which are very few in Delhi NCR.</h4>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+                <!-- NEWS THUMB -->
+                <div class="machines-thumb wow fadeInUp" data-wow-delay="0.4s" style="visibility: hidden; animation-delay: 0.4s; animation-name: none;">
+                    <div class="machines-info">
+                        <img src="./cucafit_files/lazer_class_iv.jpeg" class="img-responsive" alt="" style="margin: auto">
+                        <h4>LASER CLASS IV</h4>
+                        <p>Laser therapy uses specific wavelengths of light (red and near-infrared) to create therapeutic effects to the nerve, muscle tendon and ligaments.</p>
+                        <p>Class 4 laser therapy stimulates the production of ATP (adenosine triphosphate) which drives many of the processes within our cells and speeds up the healing process within cells.</p>
+                        <p>The benefits of class 4 laser therapy include reduced pain and swelling as well as improved range of motion.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+                <!-- NEWS THUMB -->
+                <div class="machines-thumb wow fadeInUp" data-wow-delay="0.4s" style="visibility: hidden; animation-delay: 0.4s; animation-name: none;">
+                    <div class="machines-info">
+                        <img src="./cucafit_files/analgesic_pulser.jpeg" class="img-responsive" alt="" style="margin: auto">
+                        <h4>ANALGESIC PULSER</h4>
+                        <p>The device is best suited for several pain management solutions.</p>
+                        <p>Its US FDA clearance made it safe effective and non-invasive to use causing no side-effects at all! With its comfortable electrical stimulation and effective visible results, the device is successfully running in the country and worldwide. AP439 is a standalone product that speaks up for itself in the market of pain relief devices.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+                <!-- NEWS THUMB -->
+                <div class="machines-thumb wow fadeInUp" data-wow-delay="0.4s" style="visibility: hidden; animation-delay: 0.4s; animation-name: none;">
+                    <div class="machines-info">
+                        <img src="./cucafit_files/cold_compression_therapy.jpg" class="img-responsive" alt="" style="margin: auto">
+                        <h4 style="text-align: left">COLD COMPRESSION THERAPY</h4>
+                        <p>Cold compression therapy speeds up the period of recovery and decreases the sensitivity of the nerve endings and alleviating pain, quick and effective cold compression can effectively control the swelling of the injured site with 4-6hrs, shortening the period of recovery.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- GOOGLE MAP -->
+<section id="google-map">
+    <iframe src="./cucafit_files/embed.html" width="100%" height="350" frameborder="0" style="border:0" allowfullscreen=""></iframe>
+</section>
+
+
+<!-- MAKE AN APPOINTMENT -->
+<section id="appointment" data-stellar-background-ratio="3" style="background-position: 0px -792.062px;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-sm-4">
+                <div class="footer-thumb">
+                    <h4 class="wow fadeInUp animated" data-wow-delay="0.4s" style="visibility: visible; animation-delay: 0.4s; animation-name: fadeInUp;">Contact Info</h4>
+                    <p>Shop No 162, First Floor Gaur City Center,
+                        Gaur Chowk, Sector 4, Greater Noida, Uttar Pradesh 201009</p>
+
+                    <div class="contact-info">
+                        <p><i class="fa fa-phone"></i> +91-9899900143</p>
+                        <!--                        <p><i class="fa fa-envelope-o"></i> <a href="#">info@company.com</a></p>-->
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-4">
+                <div class="footer-thumb">
+                    <div class="opening-hours">
+                        <h4 class="wow fadeInUp animated" data-wow-delay="0.4s" style="visibility: visible; animation-delay: 0.4s; animation-name: fadeInUp;">Opening Hours</h4>
+                        <p>Monday - Friday <span>06:00 AM - 10:00 PM</span></p>
+                        <p>Saturday <span>09:00 AM - 08:00 PM</span></p>
+                        <p>Sunday <span>Closed</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-4">
+                <!-- CONTACT FORM HERE -->
+                <form id="appointment-form" role="form" method="post" action="http://localhost:63342/doctor/index.html#">
+                    <h4 class="wow fadeInUp animated" data-wow-delay="0.4s" style="visibility: visible; animation-delay: 0.4s; animation-name: fadeInUp;">Make an appointment</h4>
+
+                    <div class="wow fadeInUp animated" data-wow-delay="0.8s" style="visibility: visible; animation-delay: 0.8s; animation-name: fadeInUp;">
+                        <div class="col-md-6 col-sm-6">
+                            <label for="name">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Full Name">
+                        </div>
+
+                        <div class="col-md-6 col-sm-6">
+                            <label for="date">Select Date</label>
+                            <input type="date" name="date" value="" class="form-control">
+                        </div>
+
+                        <div class="col-md-12 col-sm-12">
+                            <label for="telephone">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone">
+                            <label for="Message">Additional Message</label>
+                            <textarea class="form-control" rows="5" id="message" name="message" placeholder="Message"></textarea>
+                            <button type="submit" class="form-control" id="cf-submit" name="submit"><i class="fa fa-whatsapp" aria-hidden="true"></i> Send Whatsapp
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer data-stellar-background-ratio="5" style="background-position: 0px 615.875px;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 border-top">
+                <div class="col-md-4 col-sm-6">
+                    <div class="copyright-text">
+                        <p>Copyright © 2023 CUcuFIT | Developed: <a href="https://www.linkedin.com/in/pankajkkumawat/" target="_blank">Pankaj Kumawat</a></p>
+
+                    </div>
+                </div>
+                <div class="col-md-2 col-sm-2 text-align-center">
+                    <div class="angle-up-btn">
+                        <a href="http://localhost:63342/doctor/index.html#top" class="smoothScroll wow fadeInUp animated" data-wow-delay="1.2s" style="visibility: visible; animation-delay: 1.2s; animation-name: fadeInUp;"><i class="fa fa-angle-up"></i></a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</footer>
+<a href="http://localhost:63342/doctor/index.html#" id="WHATSAPP" target="_blank" style="opacity: 0">
+<!-- SCRIPTS -->
+<script src="./cucafit_files/jquery.js"></script>
+<script src="./cucafit_files/bootstrap.min.js"></script>
+<script src="./cucafit_files/jquery.sticky.js"></script>
+<script src="./cucafit_files/jquery.stellar.min.js"></script>
+<script src="./cucafit_files/wow.min.js"></script>
+<script src="./cucafit_files/smoothscroll.js"></script>
+<script src="./cucafit_files/owl.carousel.min.js"></script>
+<script src="./cucafit_files/custom.js"></script>
+
+
+</a></body></html>
