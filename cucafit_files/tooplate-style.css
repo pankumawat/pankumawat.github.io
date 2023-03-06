@@ -465,30 +465,17 @@ header span i {
 }
 
 .home-banner {
-    background: url(../images/banner-gaur.jpeg) no-repeat 0 50%;
+    background: url(./cucafit_files/banner-gaur.jpeg) no-repeat 0 50%;
     opacity: 0.9;
 }
 
 #about {
     margin-top: 10px;
-    background-image: url(../images/about.jpg);
+    background-image: url(./cucafit_files/about.jpg);
     background-position: right;
     background-size: contain;
     background-repeat: no-repeat;
 }
-
-.slider .item-first {
-    background-image: url(../images/slider1.jpg);
-}
-
-.slider .item-second {
-    background-image: url(../images/slider2.jpg);
-}
-
-.slider .item-third {
-    background-image: url(../images/slider3.jpg);
-}
-
 
 /*---------------------------------------
     ABOUT
