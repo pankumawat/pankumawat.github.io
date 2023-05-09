@@ -216,39 +216,8 @@ const sortTable = (columnName, order) => { // ASC, DESC,
 
 const populateTable = (tableData) => { // {cols: ["A", "B"], rows: [{"Val A", "Val B"}]}
     populateTableHeaders(tableData);
-    //appendEventListenersForSorting();
     populateTableRows(tableData);
 }
-
-const appendEventListenersForSorting = () => {
-const tableHeaders = document.querySelectorAll("#sortable-table-main thead tr th");
-tableHeaders.forEach(tableHeader => tableHeader.addEventListener("click", (e) => {
-	const thisHeader = e.target;
-	const isASC = thisHeader.classList.contains("sort-asc");
-	const isDESC = !isASC && thisHeader.classList.contains("sort-desc");
-
-	tableHeaders.forEach(th => {
-		th.classList.toggle("sort-asc", false);
-		th.classList.toggle("sort-desc", false)
-	})
-
-	const columnName = thisHeader.innerText;
-
-	if(isASC) {
-		thisHeader.classList.add("sort-desc");
-		console.info("ORDER BY '" + columnName + "' DESC")
-		sortTable(columnName, "DESC");
-	} else if(!isDESC) {
-		thisHeader.classList.add("sort-asc");
-		console.info("ORDER BY '" + columnName + "' ASC")
-		sortTable(columnName, "ASC");
-	} else {
-		sortTable(columnName);
-	}
-}))
-}
-
-
 
 populateTable(tableDataJson);
 
