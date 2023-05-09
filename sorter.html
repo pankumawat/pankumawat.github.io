@@ -18,13 +18,13 @@ thead th {
   width: 10px;
 }
 
-thead th.sort-asc:after {
-    content: '\25B2';
+thead th.sort-asc span:after {
+    content: '\21E7';
     margin-left: 0.5em;
 }
 
-thead th.sort-desc:after {
-    content: '\25BC';
+thead th.sort-desc span:after {
+    content: '\21E9';
     margin-left: 0.5em;
 }
 
@@ -40,6 +40,7 @@ width: 100%;
 </style>
 
 <body>
+
 <table class="table mb-0" id = "sortable-table-main">
                 <thead>
                   <tr>
@@ -96,6 +97,31 @@ const removeAllChildren = (element) => {
     }
 }
 
+const getHeaderTitleItem = (columnName, index) => {
+	const buttonsContainerId = `dropdownMenuButtonContainer_${index}`;
+	const div = document.createElement("div");
+	div.classList.add("dropdown");
+	div.innerHTML = `
+	<button class="btn dropdown-toggle" type="button" id="dropdownMenuButton_${index}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    ${columnName}<span/>
+  	</button>
+  	<div class="dropdown-menu" aria-labelledby="dropdownMenuButton_${index}" id="${buttonsContainerId}">
+  	<button class="dropdown-item">Sort &uarr;</button>
+    <button class="dropdown-item">Sort &darr;</button>
+    <input type = "text" style="margin-left: 15px; margin-right: 15px" placeholder="${columnName}"/>
+  	</div>`;
+    return div;
+}
+
+        const clearAllSorting = () => {
+        	const tableHeaders = document.querySelectorAll("#sortable-table-main thead tr th");
+
+	        tableHeaders.forEach(th => {
+			th.classList.toggle("sort-asc", false);
+			th.classList.toggle("sort-desc", false)
+			})
+        }
+
 const populateTableHeaders = (tableData) => {
     const {
         cols
@@ -103,11 +129,31 @@ const populateTableHeaders = (tableData) => {
     const headContainer = document.querySelector("#sortable-table-main thead tr");
     // Remove all existing <th/>
     removeAllChildren(headContainer);
-    cols.forEach(columnName => {
+    cols.forEach((columnName, index) => {
         const th = document.createElement("th");
         //th.classList.add("col");
-        th.innerHTML = columnName;
+        //th.innerHTML = columnName;
+        th.appendChild(getHeaderTitleItem(columnName, index));
         headContainer.appendChild(th);
+		const buttonsContainerId = `dropdownMenuButtonContainer_${index}`;
+        const sortFilterParent = document.getElementById(buttonsContainerId);
+        const ASCButton = sortFilterParent.children[0];
+        const DESCButton = sortFilterParent.children[1];
+        const filterTextBox = sortFilterParent.children[2];
+
+        ASCButton.onclick = () => {
+        	clearAllSorting();
+        	th.classList.add("sort-asc");
+			console.info("ORDER BY '" + columnName + "' ASC")
+			sortTable(columnName, "ASC");
+        }
+
+		DESCButton.onclick = () => {
+			clearAllSorting();
+			th.classList.add("sort-desc");
+			console.info("ORDER BY '" + columnName + "' DESC")
+			sortTable(columnName, "DESC");
+        }
     })
 }
 
@@ -170,7 +216,7 @@ const sortTable = (columnName, order) => { // ASC, DESC,
 
 const populateTable = (tableData) => { // {cols: ["A", "B"], rows: [{"Val A", "Val B"}]}
     populateTableHeaders(tableData);
-    appendEventListenersForSorting();
+    //appendEventListenersForSorting();
     populateTableRows(tableData);
 }
 
