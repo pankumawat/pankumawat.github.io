@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!--
+        Bootstrap 4
+        https://getbootstrap.com/docs/4.6/getting-started/introduction/
+    -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+
+</head>
+
+<style type="text/css">
+
+thead th {
+  cursor: pointer;
+  width: 10px;
+}
+
+thead th.sort-asc:after {
+    content: '\25B2';
+    margin-left: 0.5em;
+}
+
+thead th.sort-desc:after {
+    content: '\25BC';
+    margin-left: 0.5em;
+}
+
+body {
+  margin: 0.5em;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#sortable-table-main {
+table-layout: fixed;
+width: 100%;
+}
+</style>
+
+<body>
+<table class="table mb-0" id = "sortable-table-main">
+                <thead>
+                  <tr>
+                    <!-- <th scope="col">label</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <!-- <td>data</td> -->
+                  </tr>
+              </tbody>
+</table>
+</body>
+
+<script type="text/javascript">
+const tableDataJson = {
+    cols: ["Name", "Age", "Gender", "Profile Pic"],
+    dataType: {
+        "Profile Pic": "LINK"
+    },
+    rows: [{
+        "Name": "Pankaj",
+        "Age": "35",
+        "Gender": "Male",
+        "Profile Pic": "Pankaj Kumawat"
+    }, {
+        "Name": "Neha",
+        "Age": "34",
+        "Gender": "Female",
+        "Profile Pic": "Neha Dwivedi"
+    },{
+        "Name": "Mayank",
+        "Age": "25",
+        "Gender": "Male",
+        "Profile Pic": "Mayank Kumawat"
+    }, {
+        "Name": "Pranav",
+        "Age": "2",
+        "Gender": "Male",
+        "Profile Pic": "Pranav Kumawat"
+    }, {
+        "Name": "Pranavi",
+        "Age": "6",
+        "Gender": "Female",
+        "Profile Pic": "Pranavi Kumawat"
+    }]
+};
+
+const removeAllChildren = (element) => {
+    if (!!element && !!element.hasChildNodes) {
+        while (element.hasChildNodes()) {
+            element.removeChild(element.firstChild);
+        }
+    }
+}
+
+const populateTableHeaders = (tableData) => {
+    const {
+        cols
+    } = tableData;
+    const headContainer = document.querySelector("#sortable-table-main thead tr");
+    // Remove all existing <th/>
+    removeAllChildren(headContainer);
+    cols.forEach(columnName => {
+        const th = document.createElement("th");
+        //th.classList.add("col");
+        th.innerHTML = columnName;
+        headContainer.appendChild(th);
+    })
+}
+
+const populateTableRow = (tableData, row) => {
+    const {
+        cols
+    } = tableData;
+    const tbodyContainer = document.querySelector("#sortable-table-main tbody");
+    const tr = document.createElement("tr");
+
+    cols.map(colName => ({
+        rowData: row[colName],
+        dataType: tableData.dataType[colName]
+    })).forEach((rowItem) => {
+        const {
+            rowData,
+            dataType
+        } = rowItem;
+        const td = document.createElement("td");
+        if (!dataType || dataType === "TEXT") {
+            td.innerHTML = rowData;
+        } else if (dataType === "LINK") {
+            const a = document.createElement("a");
+            a.href = "https://www.google.com/search?tbm=isch&q=" + rowData;
+            a.target = "_blank";
+            a.innerHTML = rowData;
+            td.appendChild(a);
+        }
+        tr.appendChild(td);
+    });
+    tbodyContainer.appendChild(tr);
+}
+
+const populateTableRows = (tableData) => {
+    const {
+        rows
+    } = tableData;
+    const tbodyContainer = document.querySelector("#sortable-table-main tbody");
+    // // Remove all existing <th/>
+    removeAllChildren(tbodyContainer);
+
+    rows.forEach((row) => populateTableRow(tableData, row));
+}
+
+const sortTable = (columnName, order) => { // ASC, DESC, 
+	if(!order) return populateTable(tableDataJson);
+
+	const tableDataJsonCopy = JSON.parse(JSON.stringify(tableDataJson));
+	if(["ASC", "DESC"].includes(order)) {
+		const isNumeric = tableDataJsonCopy.rows.every(row => isFinite(row[columnName]))
+		tableDataJsonCopy.rows.sort((r1, r2) => {
+			const val1 = r1[columnName];
+			const val2 = r2[columnName];
+			return (isNumeric ? (val1 - val2) : val1.localeCompare(val2)) * (order === "ASC" ? 1 : -1);
+		});
+	}
+
+	populateTableRows(tableDataJsonCopy);
+}
+
+const populateTable = (tableData) => { // {cols: ["A", "B"], rows: [{"Val A", "Val B"}]}
+    populateTableHeaders(tableData);
+    appendEventListenersForSorting();
+    populateTableRows(tableData);
+}
+
+const appendEventListenersForSorting = () => {
+const tableHeaders = document.querySelectorAll("#sortable-table-main thead tr th");
+tableHeaders.forEach(tableHeader => tableHeader.addEventListener("click", (e) => {
+	const thisHeader = e.target;
+	const isASC = thisHeader.classList.contains("sort-asc");
+	const isDESC = !isASC && thisHeader.classList.contains("sort-desc");
+
+	tableHeaders.forEach(th => {
+		th.classList.toggle("sort-asc", false);
+		th.classList.toggle("sort-desc", false)
+	})
+
+	const columnName = thisHeader.innerText;
+
+	if(isASC) {
+		thisHeader.classList.add("sort-desc");
+		console.info("ORDER BY '" + columnName + "' DESC")
+		sortTable(columnName, "DESC");
+	} else if(!isDESC) {
+		thisHeader.classList.add("sort-asc");
+		console.info("ORDER BY '" + columnName + "' ASC")
+		sortTable(columnName, "ASC");
+	} else {
+		sortTable(columnName);
+	}
+}))
+}
+
+
+
+populateTable(tableDataJson);
+
+</script>
+</html>
