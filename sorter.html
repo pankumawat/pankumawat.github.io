@@ -20,12 +20,16 @@ thead th {
 
 thead th.sort-asc span:after {
     content: '\21E7';
-    margin-left: 0.5em;
+    margin-left: 0.3em;
 }
 
 thead th.sort-desc span:after {
     content: '\21E9';
-    margin-left: 0.5em;
+    margin-left: 0.3em;
+}
+
+tbody tr td {
+	margin-left: 0.5em;
 }
 
 body {
@@ -41,22 +45,28 @@ width: 100%;
 .hide {
 	display: none;
 }
+
+.nopadding {
+	padding: 0px;
+}
+
 </style>
 
-<body>
-
-<table class="table mb-0" id = "sortable-table-main">
-                <thead>
-                  <tr>
-                    <!-- <th scope="col">label</th> -->
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <!-- <td>data</td> -->
-                  </tr>
-              </tbody>
-</table>
+<body class="bg-secondary">
+<div class="container p-5 my-3 bg-light">
+	<table class="table mb-0" id = "sortable-table-main">
+	    <thead>
+	      <tr>
+	        <!-- <th scope="col">label</th> -->
+	      </tr>
+	    </thead>
+	    <tbody>
+	      <tr>
+	        <!-- <td>data</td> -->
+	      </tr>
+	  </tbody>
+	</table>
+</div>
 </body>
 
 <script type="text/javascript">
@@ -107,7 +117,7 @@ const getHeaderTitleItem = (columnName, index) => {
     const div = document.createElement("div");
     div.classList.add("dropdown");
     div.innerHTML = `
-	<button class="btn dropdown-toggle" type="button" id="dropdownMenuButton_${index}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	<button class="btn dropdown-toggle  nopadding" type="button" id="dropdownMenuButton_${index}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     ${columnName}<span/>
   	</button>
   	<div class="dropdown-menu" aria-labelledby="dropdownMenuButton_${index}" id="${buttonsContainerId}">
