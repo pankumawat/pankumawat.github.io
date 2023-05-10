@@ -37,6 +37,10 @@ body {
 table-layout: fixed;
 width: 100%;
 }
+
+.hide {
+	display: none;
+}
 </style>
 
 <body>
@@ -56,7 +60,7 @@ width: 100%;
 </body>
 
 <script type="text/javascript">
-const tableDataJson = {
+let tableDataJson = {
     cols: ["Name", "Age", "Gender", "Profile Pic"],
     dataType: {
         "Profile Pic": "LINK"
@@ -71,7 +75,7 @@ const tableDataJson = {
         "Age": "34",
         "Gender": "Female",
         "Profile Pic": "Neha Dwivedi"
-    },{
+    }, {
         "Name": "Mayank",
         "Age": "25",
         "Gender": "Male",
@@ -89,6 +93,7 @@ const tableDataJson = {
     }]
 };
 
+
 const removeAllChildren = (element) => {
     if (!!element && !!element.hasChildNodes) {
         while (element.hasChildNodes()) {
@@ -98,10 +103,10 @@ const removeAllChildren = (element) => {
 }
 
 const getHeaderTitleItem = (columnName, index) => {
-	const buttonsContainerId = `dropdownMenuButtonContainer_${index}`;
-	const div = document.createElement("div");
-	div.classList.add("dropdown");
-	div.innerHTML = `
+    const buttonsContainerId = `dropdownMenuButtonContainer_${index}`;
+    const div = document.createElement("div");
+    div.classList.add("dropdown");
+    div.innerHTML = `
 	<button class="btn dropdown-toggle" type="button" id="dropdownMenuButton_${index}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     ${columnName}<span/>
   	</button>
@@ -113,15 +118,43 @@ const getHeaderTitleItem = (columnName, index) => {
     return div;
 }
 
-        const clearAllSorting = () => {
-        	const tableHeaders = document.querySelectorAll("#sortable-table-main thead tr th");
+const clearAllSorting = () => {
+    const tableHeaders = document.querySelectorAll("#sortable-table-main thead tr th");
 
-	        tableHeaders.forEach(th => {
-			th.classList.toggle("sort-asc", false);
-			th.classList.toggle("sort-desc", false)
-			})
-        }
+    tableHeaders.forEach(th => {
+        th.classList.toggle("sort-asc", false);
+        th.classList.toggle("sort-desc", false)
+    })
+}
 
+const addHeadItem = (headContainer, columnName, index) => {
+	const th = document.createElement("th");
+    th.appendChild(getHeaderTitleItem(columnName, index));
+    headContainer.appendChild(th);
+    const buttonsContainerId = `dropdownMenuButtonContainer_${index}`;
+    const sortFilterParent = document.getElementById(buttonsContainerId);
+    const ASCButton = sortFilterParent.children[0];
+    const DESCButton = sortFilterParent.children[1];
+    const filterTextBox = sortFilterParent.children[2];
+
+    ASCButton.onclick = () => {
+        clearAllSorting();
+        th.classList.add("sort-asc");
+        console.info("ORDER BY '" + columnName + "' ASC")
+        sortTable(columnName, "ASC");
+    }
+
+    DESCButton.onclick = () => {
+        clearAllSorting();
+        th.classList.add("sort-desc");
+        console.info("ORDER BY '" + columnName + "' DESC")
+        sortTable(columnName, "DESC");
+    }
+
+    filterTextBox.onkeyup = (e) => {
+        filterTable(columnName, e.target.value);
+    }
+}
 const populateTableHeaders = (tableData) => {
     const {
         cols
@@ -129,32 +162,7 @@ const populateTableHeaders = (tableData) => {
     const headContainer = document.querySelector("#sortable-table-main thead tr");
     // Remove all existing <th/>
     removeAllChildren(headContainer);
-    cols.forEach((columnName, index) => {
-        const th = document.createElement("th");
-        //th.classList.add("col");
-        //th.innerHTML = columnName;
-        th.appendChild(getHeaderTitleItem(columnName, index));
-        headContainer.appendChild(th);
-		const buttonsContainerId = `dropdownMenuButtonContainer_${index}`;
-        const sortFilterParent = document.getElementById(buttonsContainerId);
-        const ASCButton = sortFilterParent.children[0];
-        const DESCButton = sortFilterParent.children[1];
-        const filterTextBox = sortFilterParent.children[2];
-
-        ASCButton.onclick = () => {
-        	clearAllSorting();
-        	th.classList.add("sort-asc");
-			console.info("ORDER BY '" + columnName + "' ASC")
-			sortTable(columnName, "ASC");
-        }
-
-		DESCButton.onclick = () => {
-			clearAllSorting();
-			th.classList.add("sort-desc");
-			console.info("ORDER BY '" + columnName + "' DESC")
-			sortTable(columnName, "DESC");
-        }
-    })
+    cols.forEach((columnName, index) => addHeadItem(headContainer, columnName, index));
 }
 
 const populateTableRow = (tableData, row) => {
@@ -199,19 +207,41 @@ const populateTableRows = (tableData) => {
 }
 
 const sortTable = (columnName, order) => { // ASC, DESC, 
-	if(!order) return populateTable(tableDataJson);
+    if (!order) return populateTable(tableDataJson);
 
-	const tableDataJsonCopy = JSON.parse(JSON.stringify(tableDataJson));
-	if(["ASC", "DESC"].includes(order)) {
-		const isNumeric = tableDataJsonCopy.rows.every(row => isFinite(row[columnName]))
-		tableDataJsonCopy.rows.sort((r1, r2) => {
-			const val1 = r1[columnName];
-			const val2 = r2[columnName];
-			return (isNumeric ? (val1 - val2) : val1.localeCompare(val2)) * (order === "ASC" ? 1 : -1);
-		});
-	}
+    const tableDataJsonCopy = JSON.parse(JSON.stringify(tableDataJson));
+    if (["ASC", "DESC"].includes(order)) {
+        const isNumeric = tableDataJsonCopy.rows.every(row => isFinite(row[columnName]))
+        tableDataJsonCopy.rows.sort((r1, r2) => {
+            const val1 = r1[columnName];
+            const val2 = r2[columnName];
+            return (isNumeric ? (val1 - val2) : val1.localeCompare(val2)) * (order === "ASC" ? 1 : -1);
+        });
+    }
 
-	populateTableRows(tableDataJsonCopy);
+    populateTableRows(tableDataJsonCopy);
+    filterTable();
+}
+
+const filter = {};
+const filterTable = (columnName, searchString) => { // ASC, DESC, 
+    
+    filter[columnName] = searchString;
+    const tbodyContainerTrs = document.querySelectorAll("#sortable-table-main tbody tr");
+
+    Array.from(tbodyContainerTrs).forEach(tr => {
+        tr.classList.add("hide");
+
+        const shouldShow = Object.keys(filter).every(cName => {
+            if (!filter[cName]) return true;
+            const columnIndex = tableDataJson.cols.indexOf(cName);
+            return columnIndex === -1 || `${tr.children[columnIndex].textContent}`.toLowerCase().includes(filter[cName].toLowerCase());
+        })
+
+        if (shouldShow) {
+            tr.classList.remove("hide");
+        }
+    })
 }
 
 const populateTable = (tableData) => { // {cols: ["A", "B"], rows: [{"Val A", "Val B"}]}
