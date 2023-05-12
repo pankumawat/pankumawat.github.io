@@ -37,14 +37,24 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+body,.btn {
+    font-size: 13px;
+}
+
+.btn {
+    font-weight: bold;
+}
+
 #sortable-table-main {
-table-layout: fixed;
+/*table-layout: fixed;*/
+overflow-x:scroll;
 width: 100%;
 }
 
 .round-border {
 	    border-radius: 10px;
 }
+
 .hide {
 	display: none;
 }
@@ -53,10 +63,11 @@ width: 100%;
 	padding: 0px;
 }
 
+
 </style>
 
 <body class="bg-secondary">
-<div class="container p-5 my-3 bg-light round-border">
+<div class="container-fluid overflow-auto p-5 my-3 bg-light round-border table-responsive">
 	<table class="table mb-0" id = "sortable-table-main">
 	    <thead>
 	      <tr>
@@ -73,40 +84,6 @@ width: 100%;
 </body>
 
 <script type="text/javascript">
-let tableDataJson = {
-    cols: ["Name", "Age", "Gender", "Profile Pic"],
-    dataType: {
-        "Profile Pic": "LINK"
-    },
-    rows: [{
-        "Name": "Pankaj",
-        "Age": "35",
-        "Gender": "Male",
-        "Profile Pic": "Pankaj Kumawat"
-    }, {
-        "Name": "Neha",
-        "Age": "34",
-        "Gender": "Female",
-        "Profile Pic": "Neha Dwivedi"
-    }, {
-        "Name": "Mayank",
-        "Age": "25",
-        "Gender": "Male",
-        "Profile Pic": "Mayank Kumawat"
-    }, {
-        "Name": "Pranav",
-        "Age": "2",
-        "Gender": "Male",
-        "Profile Pic": "Pranav Kumawat"
-    }, {
-        "Name": "Pranavi",
-        "Age": "6",
-        "Gender": "Female",
-        "Profile Pic": "Pranavi Kumawat"
-    }]
-};
-
-
 const removeAllChildren = (element) => {
     if (!!element && !!element.hasChildNodes) {
         while (element.hasChildNodes()) {
@@ -196,6 +173,8 @@ const populateTableRow = (tableData, row) => {
         const td = document.createElement("td");
         if (!dataType || dataType === "TEXT") {
             td.innerHTML = rowData;
+        } if (dataType === "DATE") {
+            td.innerHTML = new Date(rowData).toLocaleString();
         } else if (dataType === "LINK") {
             const a = document.createElement("a");
             a.href = "https://www.google.com/search?tbm=isch&q=" + rowData;
@@ -262,7 +241,71 @@ const populateTable = (tableData) => { // {cols: ["A", "B"], rows: [{"Val A", "V
     populateTableRows(tableData);
 }
 
+const parseDataAndPopulate = (obj) => {
+
+obj = { "Rowsets" : { 
+    "DateCreated" : "2023-05-12T21:13:27", "Version" : "15.5 SP0 Patch 0 (Nov 25, 2021)", "StartDate" : "2023-05-12T20:13:27+0300", "EndDate" : "2023-05-12T21:13:27+0300", "CachedTime" : "", 
+    "Rowset" : [ 
+    { "Columns" : { 
+        "Column" : [ 
+        { "Name" : "DATETIME", "SourceColumn" : "DATETIME", "Description" : "DATETIME", "SQLDataType" : 93, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "MESSAGE", "SourceColumn" : "MESSAGE", "Description" : "MESSAGE", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "PLANT", "SourceColumn" : "PLANT", "Description" : "PLANT", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+         { "Name" : "RESOURCE", "SourceColumn" : "RESOURCE", "Description" : "RESOURCE", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "PHASE", "SourceColumn" : "PHASE", "Description" : "PHASE", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "PRODUCED_MAT_NME", "SourceColumn" : "PRODUCED_MAT_NME", "Description" : "PRODUCED_MAT_NME", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "HDR_MATERIALID", "SourceColumn" : "HDR_MATERIALID", "Description" : "HDR_MATERIALID", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "POID", "SourceColumn" : "POID", "Description" : "POID", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "SCH_DATE", "SourceColumn" : "SCH_DATE", "Description" : "SCH_DATE", "SQLDataType" : 93, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "SEQ_NO", "SourceColumn" : "SEQ_NO", "Description" : "SEQ_NO", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "STATUS", "SourceColumn" : "STATUS", "Description" : "STATUS", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "USAGE", "SourceColumn" : "USAGE", "Description" : "USAGE", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "GR_LOCATION", "SourceColumn" : "GR_LOCATION", "Description" : "GR_LOCATION", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "ALT_BOM", "SourceColumn" : "ALT_BOM", "Description" : "ALT_BOM", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "ACTIVITY", "SourceColumn" : "ACTIVITY", "Description" : "ACTIVITY", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "ACTIVITY_POS", "SourceColumn" : "ACTIVITY_POS", "Description" : "ACTIVITY_POS", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "GI_MATERIALID", "SourceColumn" : "GI_MATERIALID", "Description" : "GI_MATERIALID", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "GI_MATERIAL", "SourceColumn" : "GI_MATERIAL", "Description" : "GI_MATERIAL", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "GI_PLANT", "SourceColumn" : "GI_PLANT", "Description" : "GI_PLANT", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "GI_LOCATION", "SourceColumn" : "GI_LOCATION", "Description" : "GI_LOCATION", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "FIRST_FLAG", "SourceColumn" : "FIRST_FLAG", "Description" : "FIRST_FLAG", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "MVMT_CODE", "SourceColumn" : "MVMT_CODE", "Description" : "MVMT_CODE", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "DAY_TAG", "SourceColumn" : "DAY_TAG", "Description" : "DAY_TAG", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "MONTH_TAG", "SourceColumn" : "MONTH_TAG", "Description" : "MONTH_TAG", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "FORMULA", "SourceColumn" : "FORMULA", "Description" : "FORMULA", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "LOGIC", "SourceColumn" : "LOGIC", "Description" : "LOGIC", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "COST_CENTER", "SourceColumn" : "COST_CENTER", "Description" : "COST_CENTER", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "ID", "SourceColumn" : "ID", "Description" : "ID", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "POSTEDVAL", "SourceColumn" : "POSTEDVAL", "Description" : "POSTEDVAL", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "POSTINGSTATUS", "SourceColumn" : "POSTINGSTATUS", "Description" : "POSTINGSTATUS", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
+        { "Name" : "POSTEDDATE", "SourceColumn" : "POSTEDDATE", "Description" : "POSTEDDATE", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 } ] }, 
+    "Row" : [ 
+        { "DATETIME" : "2023-05-11T15:16:05", "MESSAGE" : "Only 0 decimal places are permitted for unit of measure EA", "PLANT" : "1100", "RESOURCE" : "DEM00111", "PHASE" : "0011", "PRODUCED_MAT_NME" : "UTILITIES_DEMIN_WATER", "HDR_MATERIALID" : "1200000026", "POID" : "100008010", "SCH_DATE" : "2023-05-09T21:00:00", "SEQ_NO" : "1403700202UTLYDEM00111", "STATUS" : "F", "USAGE" : "Activity Consumption", "GR_LOCATION" : "UTLY", "ALT_BOM" : "1", "ACTIVITY" : "---", "ACTIVITY_POS" : "1", "GI_MATERIALID" : "---", "GI_MATERIAL" : "---", "GI_PLANT" : "1100", "GI_LOCATION" : "---", "FIRST_FLAG" : "---", "MVMT_CODE" : "261", "DAY_TAG" : "01_OM_FI3912.CC", "MONTH_TAG" : "01_OM_FI3912_MTD.CS", "FORMULA" : "100%", "LOGIC" : "A", "COST_CENTER" : "---", "ID" : "bfd6b0c0-f00e-11ed-bf91-f0d0ac112315", "POSTEDVAL" : "6858.765", "POSTINGSTATUS" : "F", "POSTEDDATE" : "2023-05-10" }, 
+        { "DATETIME" : "2023-05-11T15:16:13", "MESSAGE" : "Only 0 decimal places are permitted for unit of measure EA", "PLANT" : "1100", "RESOURCE" : "DEM00111", "PHASE" : "0011", "PRODUCED_MAT_NME" : "UTILITIES_DEMIN_WATER", "HDR_MATERIALID" : "1200000026", "POID" : "100008010", "SCH_DATE" : "2023-05-09T21:00:00", "SEQ_NO" : "1403800202UTLYDEM00111", "STATUS" : "F", "USAGE" : "Activity Consumption", "GR_LOCATION" : "UTLY", "ALT_BOM" : "---", "ACTIVITY" : "---", "ACTIVITY_POS" : "2", "GI_MATERIALID" : "---", "GI_MATERIAL" : "---", "GI_PLANT" : "1100", "GI_LOCATION" : "---", "FIRST_FLAG" : "---", "MVMT_CODE" : "261", "DAY_TAG" : "01_OM_FI3912.CC", "MONTH_TAG" : "01_OM_FI3912_MTD.CS", "FORMULA" : "100%", "LOGIC" : "A", "COST_CENTER" : "---", "ID" : "c4394790-f00e-11ed-cfee-f0d0ac112315", "POSTEDVAL" : "6858.765", "POSTINGSTATUS" : "F", "POSTEDDATE" : "2023-05-10" } ]
+         } ]
+     }
+ }
+
+const cols = obj.Rowsets.Rowset[0].Columns.Column.map(colObj => colObj.Name);
+const dataType = {};
+obj.Rowsets.Rowset[0].Columns.Column.forEach(col => {
+    if(col.SQLDataType == 93) {
+        dataType[col.Name] = "DATE";
+    }
+
+    if(col.Name == "SEQ_NO") {
+        dataType[col.Name] = "LINK";
+    }
+});
+
+const tableDataJson = {
+    cols: cols,
+    rows: obj.Rowsets.Rowset[0].Row,
+    dataType: dataType
+}
+
 populateTable(tableDataJson);
+}
 
 </script>
 </html>
