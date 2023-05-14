@@ -1,14 +1,17 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!--
-        Bootstrap 4
-        https://getbootstrap.com/docs/4.6/getting-started/introduction/
-    -->
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
 
+
+    <script type="text/javascript">
+        $(function() {$("#reportDate").datepicker({dateFormat: "MM d, yy"});})
+    </script>
 </head>
 
 <style type="text/css">
@@ -63,11 +66,32 @@ width: 100%;
 	padding: 0px;
 }
 
+.container-fluid > .row {
+    margin: 10px;
+}
+
+#reportDate {
+    font-size: 16px;
+    text-align: center;
+    border-radius: 5px;
+    border-color: gray;
+    border-style: groove;
+    border-width: 0.5px;
+}
+
+.filter-bar {
+    text-align: right;
+    margin-bottom: 20px;
+}
 
 </style>
 
 <body class="bg-secondary">
 <div class="container-fluid overflow-auto p-5 my-3 bg-light round-border table-responsive">
+    <div class="filter-bar">
+          <input type="text" id="reportDate" name="reportDate" placeholder="Select Date" readonly>
+        </div>
+    <div class="row">
 	<table class="table mb-0" id = "sortable-table-main">
 	    <thead>
 	      <tr>
@@ -80,6 +104,7 @@ width: 100%;
 	      </tr>
 	  </tbody>
 	</table>
+</div>
 </div>
 </body>
 
@@ -241,50 +266,8 @@ const populateTable = (tableData) => { // {cols: ["A", "B"], rows: [{"Val A", "V
     populateTableRows(tableData);
 }
 
-const parseDataAndPopulate = (obj) => {
-
-obj = { "Rowsets" : { 
-    "DateCreated" : "2023-05-12T21:13:27", "Version" : "15.5 SP0 Patch 0 (Nov 25, 2021)", "StartDate" : "2023-05-12T20:13:27+0300", "EndDate" : "2023-05-12T21:13:27+0300", "CachedTime" : "", 
-    "Rowset" : [ 
-    { "Columns" : { 
-        "Column" : [ 
-        { "Name" : "DATETIME", "SourceColumn" : "DATETIME", "Description" : "DATETIME", "SQLDataType" : 93, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "MESSAGE", "SourceColumn" : "MESSAGE", "Description" : "MESSAGE", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "PLANT", "SourceColumn" : "PLANT", "Description" : "PLANT", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-         { "Name" : "RESOURCE", "SourceColumn" : "RESOURCE", "Description" : "RESOURCE", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "PHASE", "SourceColumn" : "PHASE", "Description" : "PHASE", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "PRODUCED_MAT_NME", "SourceColumn" : "PRODUCED_MAT_NME", "Description" : "PRODUCED_MAT_NME", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "HDR_MATERIALID", "SourceColumn" : "HDR_MATERIALID", "Description" : "HDR_MATERIALID", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "POID", "SourceColumn" : "POID", "Description" : "POID", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "SCH_DATE", "SourceColumn" : "SCH_DATE", "Description" : "SCH_DATE", "SQLDataType" : 93, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "SEQ_NO", "SourceColumn" : "SEQ_NO", "Description" : "SEQ_NO", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "STATUS", "SourceColumn" : "STATUS", "Description" : "STATUS", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "USAGE", "SourceColumn" : "USAGE", "Description" : "USAGE", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "GR_LOCATION", "SourceColumn" : "GR_LOCATION", "Description" : "GR_LOCATION", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "ALT_BOM", "SourceColumn" : "ALT_BOM", "Description" : "ALT_BOM", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "ACTIVITY", "SourceColumn" : "ACTIVITY", "Description" : "ACTIVITY", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "ACTIVITY_POS", "SourceColumn" : "ACTIVITY_POS", "Description" : "ACTIVITY_POS", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "GI_MATERIALID", "SourceColumn" : "GI_MATERIALID", "Description" : "GI_MATERIALID", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "GI_MATERIAL", "SourceColumn" : "GI_MATERIAL", "Description" : "GI_MATERIAL", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "GI_PLANT", "SourceColumn" : "GI_PLANT", "Description" : "GI_PLANT", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "GI_LOCATION", "SourceColumn" : "GI_LOCATION", "Description" : "GI_LOCATION", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "FIRST_FLAG", "SourceColumn" : "FIRST_FLAG", "Description" : "FIRST_FLAG", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "MVMT_CODE", "SourceColumn" : "MVMT_CODE", "Description" : "MVMT_CODE", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "DAY_TAG", "SourceColumn" : "DAY_TAG", "Description" : "DAY_TAG", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "MONTH_TAG", "SourceColumn" : "MONTH_TAG", "Description" : "MONTH_TAG", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "FORMULA", "SourceColumn" : "FORMULA", "Description" : "FORMULA", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "LOGIC", "SourceColumn" : "LOGIC", "Description" : "LOGIC", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "COST_CENTER", "SourceColumn" : "COST_CENTER", "Description" : "COST_CENTER", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "ID", "SourceColumn" : "ID", "Description" : "ID", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "POSTEDVAL", "SourceColumn" : "POSTEDVAL", "Description" : "POSTEDVAL", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "POSTINGSTATUS", "SourceColumn" : "POSTINGSTATUS", "Description" : "POSTINGSTATUS", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 }, 
-        { "Name" : "POSTEDDATE", "SourceColumn" : "POSTEDDATE", "Description" : "POSTEDDATE", "SQLDataType" : -9, "MinRange" : 1.0, "MaxRange" : 1.0 } ] }, 
-    "Row" : [ 
-        { "DATETIME" : "2023-05-11T15:16:05", "MESSAGE" : "Only 0 decimal places are permitted for unit of measure EA", "PLANT" : "1100", "RESOURCE" : "DEM00111", "PHASE" : "0011", "PRODUCED_MAT_NME" : "UTILITIES_DEMIN_WATER", "HDR_MATERIALID" : "1200000026", "POID" : "100008010", "SCH_DATE" : "2023-05-09T21:00:00", "SEQ_NO" : "1403700202UTLYDEM00111", "STATUS" : "F", "USAGE" : "Activity Consumption", "GR_LOCATION" : "UTLY", "ALT_BOM" : "1", "ACTIVITY" : "---", "ACTIVITY_POS" : "1", "GI_MATERIALID" : "---", "GI_MATERIAL" : "---", "GI_PLANT" : "1100", "GI_LOCATION" : "---", "FIRST_FLAG" : "---", "MVMT_CODE" : "261", "DAY_TAG" : "01_OM_FI3912.CC", "MONTH_TAG" : "01_OM_FI3912_MTD.CS", "FORMULA" : "100%", "LOGIC" : "A", "COST_CENTER" : "---", "ID" : "bfd6b0c0-f00e-11ed-bf91-f0d0ac112315", "POSTEDVAL" : "6858.765", "POSTINGSTATUS" : "F", "POSTEDDATE" : "2023-05-10" }, 
-        { "DATETIME" : "2023-05-11T15:16:13", "MESSAGE" : "Only 0 decimal places are permitted for unit of measure EA", "PLANT" : "1100", "RESOURCE" : "DEM00111", "PHASE" : "0011", "PRODUCED_MAT_NME" : "UTILITIES_DEMIN_WATER", "HDR_MATERIALID" : "1200000026", "POID" : "100008010", "SCH_DATE" : "2023-05-09T21:00:00", "SEQ_NO" : "1403800202UTLYDEM00111", "STATUS" : "F", "USAGE" : "Activity Consumption", "GR_LOCATION" : "UTLY", "ALT_BOM" : "---", "ACTIVITY" : "---", "ACTIVITY_POS" : "2", "GI_MATERIALID" : "---", "GI_MATERIAL" : "---", "GI_PLANT" : "1100", "GI_LOCATION" : "---", "FIRST_FLAG" : "---", "MVMT_CODE" : "261", "DAY_TAG" : "01_OM_FI3912.CC", "MONTH_TAG" : "01_OM_FI3912_MTD.CS", "FORMULA" : "100%", "LOGIC" : "A", "COST_CENTER" : "---", "ID" : "c4394790-f00e-11ed-cfee-f0d0ac112315", "POSTEDVAL" : "6858.765", "POSTINGSTATUS" : "F", "POSTEDDATE" : "2023-05-10" } ]
-         } ]
-     }
- }
+const parseDataAndPopulate = (obj = false) => {
+obj = obj || {"Rowsets":{"Rowset":[{"Columns":{"Column":[{"Name":"DATETIME","SQLDataType":93},{"Name":"MESSAGE"},{"Name":"PLANT"},{"Name":"RESOURCE"},{"Name":"PHASE"},{"Name":"PRODUCED_MAT_NME"},{"Name":"HDR_MATERIALID"},{"Name":"POID"},{"Name":"SCH_DATE","SQLDataType":93},{"Name":"SEQ_NO"},{"Name":"STATUS"},{"Name":"USAGE"},{"Name":"GR_LOCATION"},{"Name":"ALT_BOM"},{"Name":"ACTIVITY"},{"Name":"ACTIVITY_POS"},{"Name":"GI_MATERIALID"},{"Name":"GI_MATERIAL"},{"Name":"GI_PLANT"},{"Name":"GI_LOCATION"},{"Name":"FIRST_FLAG"},{"Name":"MVMT_CODE"},{"Name":"DAY_TAG"},{"Name":"MONTH_TAG"},{"Name":"FORMULA"},{"Name":"LOGIC"},{"Name":"COST_CENTER"},{"Name":"ID"},{"Name":"POSTEDVAL"},{"Name":"POSTINGSTATUS"},{"Name":"POSTEDDATE"}]},"Row":[]}]}}
 
 const cols = obj.Rowsets.Rowset[0].Columns.Column.map(colObj => colObj.Name);
 const dataType = {};
@@ -306,6 +289,20 @@ const tableDataJson = {
 
 populateTable(tableDataJson);
 }
+
+$("#reportDate").change(function(){
+    const dateStr = $("#reportDate").val();
+    if(!!dateStr) {
+        const reportDT = new Date(dateStr);
+        const year = reportDT.getFullYear();
+        const month = reportDT.getMonth() + 1;
+        const date = reportDT.getDate();
+        const actualDate = `${year}-${month < 10 ? "0" : ""}${month}-${date < 10 ? "0" : ""}${date}`;
+        alert(actualDate);
+        const queryURL = `/XMII/Illuminator?service=CombineQueryRowsets&QueryTemplate=INJAZ/ProductionLog/ProcessingReport_SQL_html_Q&Param.1=1000&Param.2=&Param.3=F&Param.4=${actualDate}T00:00:00&Param.5=${actualDate}T23:59:59&Content-Type=text/json`;
+        fetch(queryURL).then(response => response.json()).then(parseDataAndPopulate).catch(err => console.error(err));
+    }
+});
 
 parseDataAndPopulate();
 </script>
