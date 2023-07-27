@@ -107,7 +107,34 @@ You can consider the real-life example of a TV remote battery. Your remote needs
 									    		},
 									    		{
 									    			title: "REST Principles",
-									    			link: "https://medium.com/future-vision/the-principles-of-rest-6b00deac91b3"
+									    			desc: `
+The 5 principles of REST and related concepts can be summarized and rewritten as follows:
+
+Contract First Approach / Uniform Resource Identifiers (URIs/URLs)
+
+API specification serves as a contract between the app and the server.
+URIs/URLs provide consistent access to specific data in a fixed format.
+API documentation is hosted on the developer portal, e.g., developer.company.com.
+Statelessness
+
+API does not rely on past requests and maintains no client-specific state.
+Each call must provide all necessary information for the server to respond.
+Client-Server Model
+
+App interfaces with the server through a database schema described in API documentation.
+Interaction focuses on data format the client needs and the level of information granularity.
+Server and client communication stays separated, promoting clear responsibilities.
+Caching
+
+Temporary storage of information outside the server to reduce repetitive requests.
+Cache can be located near the server, in intermediary points, or on the client/app.
+Helps to increase API performance, availability, and reduce traffic.
+Layered Architecture
+
+API design organized into layers, each unaware of its adjacent layers.
+Promotes separation-of-concerns and scalability.
+Changes in one layer can occur without affecting others.
+`
 									    		},
 									    		{
 									    			title: "Design Patterns",
