@@ -1,28 +1,63 @@
-<html>
-	<head>
-		<title>
-			Mirror
-		</title>
-	</head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mirror</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
 
-	<body>
-		<video width="110%" height="110%" controls style="transform: rotateY(180deg); margin-left: -5%">
+        video {
+            width: 110%;
+            height: auto;
+            margin-left: -5%;
+            transition: transform 0.3s ease; /* Added smooth transition */
+        }
 
-		</video>
-	</body>
+        .flip {
+            transform: rotateY(180deg); /* Flips the video */
+        }
 
-	<script>
-		// Prefer camera resolution nearest to 1280x720.
-		var constraints = { audio: false, video: { width: 1280, height: 720 } };
+        a {
+            margin-top: 10px;
+            color: #0af;
+            text-decoration: none;
+            font-size: 18px;
+            cursor: pointer;
+        }
 
-		navigator.mediaDevices.getUserMedia(constraints)
-		.then(function(mediaStream) {
-		  var video = document.querySelector('video');
-		  video.srcObject = mediaStream;
-		  video.onloadedmetadata = function(e) {
-		    video.play();
-		  };
-		})
-		.catch(function(err) { console.log(err.name + ": " + err.message); }); // always check for errors at the end.
-	</script>
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <video controls id="videodiv"></video>
+    <a href="#" onclick="document.getElementById('videodiv').classList.toggle('flip'); return false;">Flip</a>
+
+    <script>
+        // Set camera constraints
+        const constraints = { audio: false, video: { width: 1280, height: 720 } };
+
+        // Access the user's camera and stream the video
+        navigator.mediaDevices.getUserMedia(constraints)
+            .then(mediaStream => {
+                const video = document.getElementById('videodiv');
+                video.srcObject = mediaStream;
+                video.onloadedmetadata = () => video.play();
+            })
+            .catch(err => console.error(`Error: ${err.name} - ${err.message}`)); // Improved error handling
+    </script>
+</body>
 </html>
