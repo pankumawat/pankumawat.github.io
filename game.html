@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style type="text/css">
+    #container {
+        background: white;
+        height: 700px;
+        width: 500px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    #car, #anothercar {
+        position: absolute;
+        opacity: 0.5;
+    }
+
+    #car {
+        left: 300px;
+        top: 500px;
+    }
+</style>
+</head>
+<body>
+<audio id="myAudio1" src="accident.mp3"></audio>
+<div id="container">
+    <img id="anothercar" src="anothercar.png" height="200px"/>
+    <img id="car" src="car.png" height="200px"/>
+</div>
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+        const car = document.getElementById('car');
+        const anothercar = document.getElementById('anothercar');
+        const myAudio1 = document.getElementById('myAudio1');
+        let accident = false;
+        let _left = 300;
+        let _top = 500;
+
+        const detectAccident = () => {
+            const rect1 = car.getBoundingClientRect();
+            const rect2 = anothercar.getBoundingClientRect();
+            return !(
+                rect1.top > rect2.bottom ||
+                rect1.bottom < rect2.top ||
+                rect1.left > rect2.right ||
+                rect1.right < rect2.left
+            );
+        }
+
+        const checkAccident = () => {
+            if (detectAccident()) {
+                accident = true;
+                myAudio1.play();
+                document.removeEventListener('keydown', carMovementEventListener);
+                cancelAnimationFrame(animationFrameId);
+                setTimeout(() => window.location.reload(), 2000)
+            }
+        }
+
+        const carMovementEventListener = (event) => {
+            event.preventDefault();
+            const step = 300;
+            switch(event.key) {
+                case 'ArrowLeft':
+                    _left -= step;
+                    break;
+                case 'ArrowRight':
+                    _left += step;
+                    break;
+                // case 'ArrowUp':
+                //     _top -= step;
+                //     break;
+                // case 'ArrowDown':
+                //     _top += step;
+                //     break;
+            }
+            _left = Math.min(Math.max(_left, 0), 760)
+            car.style.left = _left + 'px';
+            car.style.top = _top + 'px';
+            checkAccident();
+        }
+
+        document.addEventListener('keydown', carMovementEventListener);
+        let _aleft = Math.floor(Math.random() * 800);
+        let _atop = -200;
+        const speed = Math.max(1, Math.min(Number(new URLSearchParams(window.location.search).get('speed')) || 30, 100));
+
+        const update = () => {
+            _atop += 10;
+            if (_atop > 900) {
+                _aleft = Math.floor(Math.random() * 800);
+                _atop = -200;
+            }
+            anothercar.style.left = _aleft + 'px';
+            anothercar.style.top = _atop + 'px';
+            checkAccident();
+            if (!accident) {
+                animationFrameId = requestAnimationFrame(update);
+            }
+        }
+
+        let animationFrameId = requestAnimationFrame(update);
+    });
+</script>
+</body>
+</html>
