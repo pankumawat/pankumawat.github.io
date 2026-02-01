@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pink Heart Camera</title>
+
+<style>
+    html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at top, #2a001f, #000);
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+    }
+
+    svg {
+        width: 100vw;
+        height: 100vh;
+        display: block;
+        filter: drop-shadow(0 0 25px rgba(255, 105, 180, 0.6));
+        animation: pulse 3.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.015); }
+    }
+
+    video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .flip {
+        transform: rotateY(180deg);
+    }
+
+    .controls {
+        position: fixed;
+        bottom: 24px;
+        z-index: 10;
+    }
+
+    .controls a {
+        color: #ff7ab8;
+        font-size: 18px;
+        text-decoration: none;
+        cursor: pointer;
+        text-shadow: 0 0 10px rgba(255, 122, 184, 0.8);
+    }
+
+    .controls a:hover {
+        text-decoration: underline;
+    }
+</style>
+</head>
+
+<body>
+
+<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
+    <defs>
+        <mask id="heartMask">
+            <rect width="100" height="100" fill="black"/>
+            <path
+                fill="white"
+                d="
+                M50 90
+                C50 90 3 60 3 32
+                C3 12 26 8 50 28
+                C74 8 97 12 97 32
+                C97 60 50 90 50 90 Z
+                "
+            />
+        </mask>
+
+        <!-- Pink glow stroke -->
+        <filter id="pinkGlow">
+            <feGaussianBlur stdDeviation="2.5" result="blur"/>
+            <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+    </defs>
+
+    <foreignObject width="100%" height="100%" mask="url(#heartMask)">
+        <video id="videodiv" autoplay muted playsinline></video>
+    </foreignObject>
+
+    <!-- Heart outline -->
+    <path
+        d="
+        M50 90
+        C50 90 3 60 3 32
+        C3 12 26 8 50 28
+        C74 8 97 12 97 32
+        C97 60 50 90 50 90 Z
+        "
+        fill="none"
+        stroke="#ff6fb1"
+        stroke-width="1.2"
+        filter="url(#pinkGlow)"
+    />
+</svg>
+
+<div class="controls">
+    <a onclick="document.getElementById('videodiv').classList.toggle('flip')">
+        Flip Camera
+    </a>
+</div>
+
+<script>
+    const constraints = {
+        audio: false,
+        video: { width: 1280, height: 720 }
+    };
+
+    navigator.mediaDevices.getUserMedia(constraints)
+        .then(stream => {
+            document.getElementById('videodiv').srcObject = stream;
+        })
+        .catch(err => console.error("Camera error:", err));
+</script>
+
+</body>
+</html>
