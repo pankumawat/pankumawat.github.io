@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — FindMyTabs</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f6f6f6;
+      color: #1a1a2e;
+      line-height: 1.7;
+      font-size: 16px;
+      padding: 40px 20px 80px;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 48px 56px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    }
+
+    .badge {
+      display: inline-block;
+      background: #e8f5e9;
+      color: #2e7d32;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #1a1a2e;
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 36px;
+      padding-bottom: 36px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    h2 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin: 36px 0 10px;
+    }
+
+    p { color: #374151; margin-bottom: 14px; }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 14px;
+    }
+
+    ul li {
+      color: #374151;
+      padding: 5px 0 5px 24px;
+      position: relative;
+    }
+
+    ul li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: #89b4fa;
+      font-weight: 700;
+    }
+
+    .highlight-box {
+      background: #f0f4ff;
+      border-left: 4px solid #89b4fa;
+      border-radius: 0 8px 8px 0;
+      padding: 16px 20px;
+      margin: 24px 0;
+      color: #1e3a8a;
+      font-weight: 500;
+      font-size: 15px;
+    }
+
+    .permission-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 14px;
+      font-size: 14px;
+    }
+
+    .permission-table th {
+      text-align: left;
+      background: #f9fafb;
+      padding: 10px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #6b7280;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .permission-table td {
+      padding: 11px 14px;
+      border-bottom: 1px solid #f3f4f6;
+      color: #374151;
+      vertical-align: top;
+    }
+
+    .permission-table tr:last-child td { border-bottom: none; }
+
+    .permission-table td:first-child {
+      font-family: "SF Mono", "Fira Code", Consolas, monospace;
+      font-size: 12px;
+      color: #6d28d9;
+      white-space: nowrap;
+      font-weight: 600;
+    }
+
+    .footer {
+      margin-top: 48px;
+      padding-top: 28px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 13px;
+      color: #9ca3af;
+    }
+
+    .footer a { color: #89b4fa; text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      .container { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <span class="badge">Privacy Policy</span>
+    <h1>FindMyTabs</h1>
+    <p class="subtitle">
+      Last updated: April 10, 2026 &nbsp;·&nbsp;
+      Effective date: April 10, 2026
+    </p>
+
+    <div class="highlight-box">
+      FindMyTabs does not collect, transmit, store, or share any personal data — ever.
+      Everything the extension does happens entirely inside your browser.
+    </div>
+
+    <!-- 1 -->
+    <h2>1. Who we are</h2>
+    <p>
+      FindMyTabs is a free, open-source Chrome extension developed and maintained by
+      Pankaj Kumawat (<a href="https://github.com/pankumawat" style="color:#89b4fa;">github.com/pankumawat</a>).
+      The extension is published on the Chrome Web Store and its source code is publicly available on GitHub.
+    </p>
+
+    <!-- 2 -->
+    <h2>2. Data we do NOT collect</h2>
+    <p>We do not collect, log, or transmit any of the following:</p>
+    <ul>
+      <li>Tab titles or URLs you browse</li>
+      <li>Search queries typed into the extension popup</li>
+      <li>Custom rules or categories you create</li>
+      <li>Browsing history or session data</li>
+      <li>IP addresses, device identifiers, or location</li>
+      <li>Any personally identifiable information (PII)</li>
+      <li>Crash reports or usage analytics</li>
+    </ul>
+
+    <!-- 3 -->
+    <h2>3. Local storage only</h2>
+    <p>
+      The only data FindMyTabs ever writes to storage is your <strong>custom categorization rules</strong>
+      (e.g. "tabs matching mycompany.com → Work"). This data is saved using
+      <code style="font-size:13px;background:#f3f4f6;padding:1px 5px;border-radius:4px;">chrome.storage.sync</code>,
+      which syncs across your own Chrome profile via your Google account — it is never sent
+      to any server operated by FindMyTabs.
+    </p>
+    <p>
+      You can delete this data at any time by removing all custom rules from the extension's
+      Rules page, or by uninstalling the extension.
+    </p>
+
+    <!-- 4 -->
+    <h2>4. Permissions explained</h2>
+    <p>
+      FindMyTabs requests only the Chrome permissions it strictly needs to function.
+      Here is what each permission is used for:
+    </p>
+    <table class="permission-table">
+      <thead>
+        <tr>
+          <th>Permission</th>
+          <th>Why it's needed</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>tabs</td>
+          <td>Read the list of open tabs (title, URL, window ID) so the extension can display and search them. Tab data never leaves your browser.</td>
+        </tr>
+        <tr>
+          <td>tabGroups</td>
+          <td>Create and update Chrome native tab groups when you click "Group tabs".</td>
+        </tr>
+        <tr>
+          <td>sessions</td>
+          <td>Read the list of recently closed tabs so you can reopen them with one click.</td>
+        </tr>
+        <tr>
+          <td>storage</td>
+          <td>Save your custom rules to <code>chrome.storage.sync</code> so they persist across browser restarts and sync with your Chrome profile.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 5 -->
+    <h2>5. No external network requests</h2>
+    <p>
+      FindMyTabs makes <strong>zero network requests</strong> of its own. It does not contact any
+      external server, analytics service, CDN, or third-party API. There is no backend.
+      All processing — searching, categorizing, grouping — happens locally in your browser using
+      the Chrome extension APIs.
+    </p>
+
+    <!-- 6 -->
+    <h2>6. Third-party services</h2>
+    <p>
+      FindMyTabs does not integrate with or embed any third-party analytics, advertising,
+      tracking, or data-collection services (such as Google Analytics, Sentry, Mixpanel, etc.).
+    </p>
+    <p>
+      The extension is distributed through the <strong>Chrome Web Store</strong>, which is
+      operated by Google. Your use of the Chrome Web Store is governed by
+      <a href="https://policies.google.com/privacy" style="color:#89b4fa;">Google's Privacy Policy</a>.
+    </p>
+
+    <!-- 7 -->
+    <h2>7. Open source</h2>
+    <p>
+      FindMyTabs is fully open source. You can inspect every line of code at:
+    </p>
+    <p>
+      <a href="https://github.com/pankumawat/FindMyTabs" style="color:#89b4fa;">
+        github.com/pankumawat/FindMyTabs
+      </a>
+    </p>
+    <p>
+      We encourage you to review the source if you have any concerns about how the
+      extension handles data.
+    </p>
+
+    <!-- 8 -->
+    <h2>8. Children's privacy</h2>
+    <p>
+      FindMyTabs is a general-purpose productivity tool not directed at children.
+      We do not knowingly collect any information from anyone, including children under 13.
+    </p>
+
+    <!-- 9 -->
+    <h2>9. Changes to this policy</h2>
+    <p>
+      If this policy ever changes — for example if a future version adds optional telemetry —
+      the updated policy will be published at this URL and the "Last updated" date above will
+      be revised. Material changes will also be noted in the extension's changelog.
+    </p>
+
+    <!-- 10 -->
+    <h2>10. Contact</h2>
+    <p>
+      Questions, concerns, or requests regarding this privacy policy? Reach out via:
+    </p>
+    <ul>
+      <li>GitHub Issues: <a href="https://github.com/pankumawat/FindMyTabs/issues" style="color:#89b4fa;">github.com/pankumawat/FindMyTabs/issues</a></li>
+      <li>GitHub Sponsors: <a href="https://github.com/sponsors/pankumawat" style="color:#89b4fa;">github.com/sponsors/pankumawat</a></li>
+    </ul>
+
+    <div class="footer">
+      &copy; 2026 Pankaj Kumawat &nbsp;·&nbsp;
+      <a href="https://github.com/pankumawat/FindMyTabs">FindMyTabs on GitHub</a> &nbsp;·&nbsp;
+      This policy is written in plain English and applies solely to the FindMyTabs Chrome extension.
+    </div>
+
+  </div>
+</body>
+</html>
