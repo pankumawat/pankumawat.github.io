@@ -45,6 +45,8 @@ const mobileControls = document.getElementById('mobile-controls');
 const brakeBtn = document.getElementById('brake-btn');
 const jumpBtn = document.getElementById('jump-btn');
 const accelBtn = document.getElementById('accel-btn');
+const leftBtn = document.getElementById('left-btn');
+const rightBtn = document.getElementById('right-btn');
 const muteBtn = document.getElementById('mute-btn');
 const loadingScreen = document.getElementById('loading-screen');
 const speedVignetteEl = document.getElementById('speed-vignette');
@@ -207,7 +209,7 @@ muteBtn.addEventListener('click', () => {
   muteBtn.textContent = audioEnabled ? 'Sound: On' : 'Sound: Off';
 });
 
-// ---------- Mobile: touch + tilt controls ----------
+// ---------- Mobile: touch controls ----------
 const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 let autoSpeedEnabled = false; // only ever meaningful on touch devices - set at Start based on the toggle
 
@@ -221,27 +223,6 @@ autoSpeedToggle.addEventListener('change', () => {
   autoSpeedEnabled = isTouchDevice && autoSpeedToggle.checked;
   accelBtn.classList.toggle('hidden', autoSpeedEnabled || !isTouchDevice);
 });
-
-// Mobile devices are forced to play in landscape (matches the CSS #rotate-overlay
-// query) - gameplay physics pause while the "rotate your device" overlay is up,
-// so nothing keeps advancing off-screen while the player can't see or steer.
-const portraitLockQuery = window.matchMedia('(orientation: portrait) and (hover: none) and (pointer: coarse)');
-let orientationBlocked = portraitLockQuery.matches;
-portraitLockQuery.addEventListener('change', (e) => {
-  orientationBlocked = e.matches;
-});
-
-function tryLockLandscape() {
-  if (!isTouchDevice) return;
-  try {
-    if (screen.orientation && typeof screen.orientation.lock === 'function') {
-      screen.orientation.lock('landscape').catch(() => {});
-    }
-  } catch (e) {
-    // orientation lock isn't available in a plain browser tab on most platforms
-    // (notably all of iOS Safari) - the #rotate-overlay CSS fallback covers that.
-  }
-}
 
 function bindHoldButton(el, code) {
   const press = (e) => { e.preventDefault(); keys[code] = true; };
@@ -267,64 +248,22 @@ function triggerJump() {
 jumpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); triggerJump(); });
 jumpBtn.addEventListener('mousedown', () => triggerJump());
 
-// Tilt steering: crossing a threshold steps one lane, like a key press.
-// A neutral-zone requirement (hysteresis) stops one tilt from repeat-triggering.
-const TILT_TRIGGER_DEG = 10;
-const TILT_RESET_DEG = 6;
-let tiltNeutral = true;
-let tiltListenerAttached = false;
-
-// gamma/beta from DeviceOrientationEvent are relative to the device's PHYSICAL
-// frame, not the current screen orientation - when the phone is rotated to
-// landscape, "left/right tilt" is reported through beta instead of gamma (with
-// a sign that depends on which way it was rotated). Without correcting for
-// this, tilt steering only works in portrait.
-function getScreenAngle() {
-  if (screen.orientation && typeof screen.orientation.angle === 'number') return screen.orientation.angle;
-  if (typeof window.orientation === 'number') return window.orientation;
-  return 0;
-}
-
-function getTiltLeftRight(e) {
-  const angle = getScreenAngle();
-  let tilt;
-  if (angle === 90) tilt = -e.beta;
-  else if (angle === -90 || angle === 270) tilt = e.beta;
-  else tilt = e.gamma;
-  return -tilt; // flipped to match real-device tilt direction (was reversed)
-}
-
-function handleOrientation(e) {
+function triggerLaneLeft() {
   if (state !== 'playing' && state !== 'tutorial') return;
-  const tilt = getTiltLeftRight(e);
-  if (tilt === null || tilt === undefined) return;
-  if (tiltNeutral) {
-    if (tilt > TILT_TRIGGER_DEG) {
-      player.lane = Math.min(2, player.lane + 1);
-      if (state === 'tutorial') tutorialFlags.right = true;
-      tiltNeutral = false;
-    } else if (tilt < -TILT_TRIGGER_DEG) {
-      player.lane = Math.max(0, player.lane - 1);
-      if (state === 'tutorial') tutorialFlags.left = true;
-      tiltNeutral = false;
-    }
-  } else if (Math.abs(tilt) < TILT_RESET_DEG) {
-    tiltNeutral = true;
-  }
+  player.lane = Math.max(0, player.lane - 1);
+  if (state === 'tutorial') tutorialFlags.left = true;
 }
 
-function enableTiltSteering() {
-  if (!isTouchDevice || tiltListenerAttached || typeof window.DeviceOrientationEvent === 'undefined') return;
-  tiltListenerAttached = true;
-  // Attach unconditionally - on browsers without a permission gate (most of Android)
-  // events start flowing immediately. On iOS 13+, events stay silent until the
-  // requestPermission() prompt (fired below, from this same user gesture) is granted,
-  // so we don't need to block attaching the listener on that promise resolving.
-  window.addEventListener('deviceorientation', handleOrientation);
-  if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-    DeviceOrientationEvent.requestPermission().catch(() => {});
-  }
+function triggerLaneRight() {
+  if (state !== 'playing' && state !== 'tutorial') return;
+  player.lane = Math.min(2, player.lane + 1);
+  if (state === 'tutorial') tutorialFlags.right = true;
 }
+
+leftBtn.addEventListener('touchstart', (e) => { e.preventDefault(); triggerLaneLeft(); });
+leftBtn.addEventListener('mousedown', () => triggerLaneLeft());
+rightBtn.addEventListener('touchstart', (e) => { e.preventDefault(); triggerLaneRight(); });
+rightBtn.addEventListener('mousedown', () => triggerLaneRight());
 
 bindHoldButton(brakeBtn, 'ArrowDown');
 bindHoldButton(accelBtn, 'ArrowUp');
@@ -1019,7 +958,7 @@ function buildTutorialSteps() {
 
   const steps = [
     {
-      text: isTouchDevice ? 'Tilt your phone left/right to change lanes' : 'Use ← and → to change lanes',
+      text: isTouchDevice ? 'Tap ◀ / ▶ to change lanes' : 'Use ← and → to change lanes',
       done: () => tutorialFlags.left && tutorialFlags.right,
     },
   ];
@@ -1148,11 +1087,9 @@ window.addEventListener('keydown', (e) => {
 
   if (!keys[e.code]) {
     if (e.code === 'ArrowLeft') {
-      player.lane = Math.max(0, player.lane - 1);
-      if (state === 'tutorial') tutorialFlags.left = true;
+      triggerLaneLeft();
     } else if (e.code === 'ArrowRight') {
-      player.lane = Math.min(2, player.lane + 1);
-      if (state === 'tutorial') tutorialFlags.right = true;
+      triggerLaneRight();
     } else if (e.code === 'Space') {
       triggerJump();
     }
@@ -1326,7 +1263,7 @@ function loop(timestamp) {
   lastTime = timestamp;
 
   try {
-    if (!orientationBlocked && (state === 'playing' || state === 'tutorial')) {
+    if (state === 'playing' || state === 'tutorial') {
       update(dt);
       updateHud();
       updateScenery(dt);
@@ -1348,8 +1285,6 @@ function loop(timestamp) {
 startBtn.addEventListener('click', () => {
   autoSpeedEnabled = isTouchDevice && autoSpeedToggle.checked;
   accelBtn.classList.toggle('hidden', autoSpeedEnabled || !isTouchDevice);
-  enableTiltSteering();
-  tryLockLandscape();
   startEngineSound();
   initGame();
   startScreen.classList.add('hidden');
@@ -1361,7 +1296,6 @@ startBtn.addEventListener('click', () => {
 });
 
 restartBtn.addEventListener('click', () => {
-  tryLockLandscape();
   startEngineSound();
   initGame();
   state = 'playing';

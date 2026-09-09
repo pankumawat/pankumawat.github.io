@@ -35,13 +35,6 @@
     <p>Loading Pranav Racing&hellip;</p>
   </div>
 
-  <!-- Shown only on portrait touch devices; blocks and pauses play until rotated -->
-  <div id="rotate-overlay">
-    <div class="rotate-icon"></div>
-    <p>Rotate your device to play</p>
-    <p class="rotate-hint">Pranav Racing is played in landscape</p>
-  </div>
-
   <!-- HUD -->
   <div id="hud" class="hidden">
     <div id="score-panel">
@@ -95,7 +88,7 @@
         <input type="checkbox" id="auto-speed-toggle" checked>
         <span>Auto Speed (recommended for mobile)</span>
       </label>
-      <p class="mobile-hint">Tilt your phone left/right to steer. Tap Start to enable tilt controls.</p>
+      <p class="mobile-hint">Use the &#9664; / &#9654; buttons to change lanes.</p>
     </div>
 
     <button id="start-btn">Start Game</button>
@@ -107,9 +100,15 @@
 
   <!-- Touch controls (mobile only) -->
   <div id="mobile-controls" class="hidden">
-    <button id="brake-btn" class="touch-btn touch-btn-brake">BRAKE</button>
-    <button id="jump-btn" class="touch-btn touch-btn-jump">JUMP</button>
+    <div class="control-col">
+      <button id="left-btn" class="touch-btn touch-btn-arrow">&#9664;</button>
+      <button id="brake-btn" class="touch-btn touch-btn-brake">BRAKE</button>
+    </div>
     <button id="accel-btn" class="touch-btn touch-btn-accel">SPEED</button>
+    <div class="control-col">
+      <button id="right-btn" class="touch-btn touch-btn-arrow">&#9654;</button>
+      <button id="jump-btn" class="touch-btn touch-btn-jump">JUMP</button>
+    </div>
   </div>
 
   <!-- Game over screen -->
