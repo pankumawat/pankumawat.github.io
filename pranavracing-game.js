@@ -248,7 +248,7 @@ jumpBtn.addEventListener('mousedown', () => triggerJump());
 
 // Tilt steering: crossing a threshold steps one lane, like a key press.
 // A neutral-zone requirement (hysteresis) stops one tilt from repeat-triggering.
-const TILT_TRIGGER_DEG = 15;
+const TILT_TRIGGER_DEG = 10;
 const TILT_RESET_DEG = 6;
 let tiltNeutral = true;
 let tiltListenerAttached = false;
@@ -266,9 +266,11 @@ function getScreenAngle() {
 
 function getTiltLeftRight(e) {
   const angle = getScreenAngle();
-  if (angle === 90) return -e.beta;
-  if (angle === -90 || angle === 270) return e.beta;
-  return e.gamma;
+  let tilt;
+  if (angle === 90) tilt = -e.beta;
+  else if (angle === -90 || angle === 270) tilt = e.beta;
+  else tilt = e.gamma;
+  return -tilt; // flipped to match real-device tilt direction (was reversed)
 }
 
 function handleOrientation(e) {
@@ -968,13 +970,11 @@ rebuildPreview();
 
 // ---------- Tutorial (learning mode) ----------
 const TUTORIAL_STEP_HOLD = 0.7;
-const COUNTDOWN_STEPS = ['3', '2', '1', 'GO!'];
 
 let tutorialSteps = [];
 let tutorialFlags = { left: false, right: false, up: false, down: false, space: false };
 let tutorialStep = 0;
 let tutorialHoldTimer = 0;
-let lastCountdownIdx = -1;
 
 const TUTORIAL_SEEN_KEY = 'pranavRacingTutorialSeen';
 
@@ -1030,26 +1030,22 @@ function updateTutorialDots() {
 
 function startTutorial() {
   tutorialSteps = buildTutorialSteps();
-  if (tutorialSteps.length > 0) markTutorialSeen();
+  if (tutorialSteps.length === 0) {
+    beginPlaying(); // nothing to teach - run the game directly, no countdown
+    return;
+  }
+  markTutorialSeen();
   tutorialFlags = { left: false, right: false, up: false, down: false, space: false };
   tutorialStep = 0;
   tutorialHoldTimer = 0;
-  lastCountdownIdx = -1;
   tutorialBanner.classList.remove('hidden');
-  tutorialText.textContent = tutorialSteps.length > 0 ? tutorialSteps[0].text : COUNTDOWN_STEPS[0];
+  tutorialText.textContent = tutorialSteps[0].text;
   updateTutorialDots();
 }
 
 function updateTutorial(dt) {
   if (tutorialStep >= tutorialSteps.length) {
-    tutorialHoldTimer += dt;
-    const idx = Math.min(COUNTDOWN_STEPS.length - 1, Math.floor(tutorialHoldTimer));
-    tutorialText.textContent = COUNTDOWN_STEPS[idx];
-    if (idx !== lastCountdownIdx) {
-      lastCountdownIdx = idx;
-      playTone(idx === COUNTDOWN_STEPS.length - 1 ? 700 : 440, 0.15, 'sine', 0.1);
-    }
-    if (tutorialHoldTimer > COUNTDOWN_STEPS.length) beginPlaying();
+    beginPlaying(); // walkthrough finished - run the game directly, no countdown
     return;
   }
   if (tutorialSteps[tutorialStep].done()) {
