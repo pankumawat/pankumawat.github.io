@@ -222,6 +222,27 @@ autoSpeedToggle.addEventListener('change', () => {
   accelBtn.classList.toggle('hidden', autoSpeedEnabled || !isTouchDevice);
 });
 
+// Mobile devices are forced to play in landscape (matches the CSS #rotate-overlay
+// query) - gameplay physics pause while the "rotate your device" overlay is up,
+// so nothing keeps advancing off-screen while the player can't see or steer.
+const portraitLockQuery = window.matchMedia('(orientation: portrait) and (hover: none) and (pointer: coarse)');
+let orientationBlocked = portraitLockQuery.matches;
+portraitLockQuery.addEventListener('change', (e) => {
+  orientationBlocked = e.matches;
+});
+
+function tryLockLandscape() {
+  if (!isTouchDevice) return;
+  try {
+    if (screen.orientation && typeof screen.orientation.lock === 'function') {
+      screen.orientation.lock('landscape').catch(() => {});
+    }
+  } catch (e) {
+    // orientation lock isn't available in a plain browser tab on most platforms
+    // (notably all of iOS Safari) - the #rotate-overlay CSS fallback covers that.
+  }
+}
+
 function bindHoldButton(el, code) {
   const press = (e) => { e.preventDefault(); keys[code] = true; };
   const release = (e) => { e.preventDefault(); keys[code] = false; };
@@ -1305,12 +1326,12 @@ function loop(timestamp) {
   lastTime = timestamp;
 
   try {
-    if (state === 'playing' || state === 'tutorial') {
+    if (!orientationBlocked && (state === 'playing' || state === 'tutorial')) {
       update(dt);
       updateHud();
       updateScenery(dt);
+      if (state === 'tutorial') updateTutorial(dt);
     }
-    if (state === 'tutorial') updateTutorial(dt);
     updateCamera(dt);
     renderer.render(scene, camera);
 
@@ -1328,6 +1349,7 @@ startBtn.addEventListener('click', () => {
   autoSpeedEnabled = isTouchDevice && autoSpeedToggle.checked;
   accelBtn.classList.toggle('hidden', autoSpeedEnabled || !isTouchDevice);
   enableTiltSteering();
+  tryLockLandscape();
   startEngineSound();
   initGame();
   startScreen.classList.add('hidden');
@@ -1339,6 +1361,7 @@ startBtn.addEventListener('click', () => {
 });
 
 restartBtn.addEventListener('click', () => {
+  tryLockLandscape();
   startEngineSound();
   initGame();
   state = 'playing';

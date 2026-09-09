@@ -131,6 +131,73 @@ html, body {
   to { transform: rotate(360deg); }
 }
 
+/* ---------- Rotate-to-landscape overlay (touch devices, portrait only) ---------- */
+#rotate-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: #0a0f19;
+  color: #ffd166;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  padding: 24px;
+}
+
+/* Only real mobile/tablet touchscreens get forced into this - a narrow
+   desktop browser window (hover-capable, fine pointer) never matches. */
+@media (orientation: portrait) and (hover: none) and (pointer: coarse) {
+  #rotate-overlay {
+    display: flex;
+  }
+}
+
+.rotate-icon {
+  width: 46px;
+  height: 74px;
+  border: 4px solid #ffd166;
+  border-radius: 8px;
+  position: relative;
+  animation: rotate-icon-spin 1.6s ease-in-out infinite;
+}
+
+.rotate-icon::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffd166;
+  transform: translateX(-50%);
+}
+
+@keyframes rotate-icon-spin {
+  0%, 15% { transform: rotate(0deg); }
+  50%, 65% { transform: rotate(-90deg); }
+  100% { transform: rotate(-90deg); }
+}
+
+#rotate-overlay p {
+  margin: 0;
+  font-weight: bold;
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.rotate-hint {
+  font-weight: normal !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  font-size: 13px !important;
+  color: #9fb3c8 !important;
+}
+
 #hud {
   position: absolute;
   top: calc(env(safe-area-inset-top, 0px) + 16px);

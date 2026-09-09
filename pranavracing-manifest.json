@@ -5,7 +5,7 @@
   "start_url": "./pranavracing.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "any",
+  "orientation": "landscape",
   "background_color": "#0a0f19",
   "theme_color": "#0a0f19",
   "icons": [
